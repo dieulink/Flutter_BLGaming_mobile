@@ -1,0 +1,224 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:blgaming_app/models/response/cart_response.dart';
+import 'package:blgaming_app/screens/home_screens/widgets/app_bar_cart_custom.dart';
+import 'package:blgaming_app/screens/home_screens/widgets/item_cart.dart';
+import 'package:blgaming_app/services/cart_service.dart';
+import 'package:blgaming_app/ui_value.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  CartResponse? cartResponse;
+  bool isLoading = true;
+  Set<int> selectedGameIds = {};
+  double totalPrice = 0;
+  int totalQuantity = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCart();
+  }
+
+  Future<void> loadCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null || userId.isEmpty) {
+      print(" userId not found in SharedPreferences");
+      return;
+    }
+
+    final response = await CartService.fetchCart(userId);
+    setState(() {
+      cartResponse = response;
+      isLoading = false;
+      updateTotals();
+    });
+  }
+
+  void updateTotals() {
+    if (cartResponse == null) return;
+
+    final selectedItems = cartResponse!.cartItems
+        .where((item) => selectedGameIds.contains(item.gameId))
+        .toList();
+
+    double total = 0;
+    int quantity = 0;
+
+    for (var item in selectedItems) {
+      total += item.price * item.quantity;
+      quantity += item.quantity;
+    }
+
+    setState(() {
+      totalPrice = total;
+      totalQuantity = quantity;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBarCartCustom(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (cartResponse == null || cartResponse!.cartItems.isEmpty) {
+      return Scaffold(
+        appBar: AppBarCartCustom(),
+        body: Center(
+          child: Text(
+            "Giỏ hàng trống",
+            style: TextStyle(
+              color: white,
+              fontFamily: "LD",
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBarCartCustom(),
+      body: ListView.builder(
+        itemCount: cartResponse!.cartItems.length,
+        itemBuilder: (context, index) {
+          final item = cartResponse!.cartItems[index];
+          return Column(
+            children: [
+              Container(height: 1, color: backgroudColor),
+              CheckboxListTile(
+                value: selectedGameIds.contains(item.gameId),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      selectedGameIds.add(item.gameId);
+                    } else {
+                      selectedGameIds.remove(item.gameId);
+                    }
+                    updateTotals();
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+                activeColor: mainColor,
+                checkColor: Colors.white,
+                title: ItemCart(
+                  imgPath: item.imageUrl,
+                  name: item.name,
+                  price: item.price.toInt(),
+                  quantity: item.quantity,
+                  productId: item.gameId,
+                  onDeleteSuccess: () async {
+                    await loadCart();
+                  },
+                  onIncreaseSuccess: () async {
+                    await loadCart();
+                  },
+                  onDecreaseSuccess: () async {
+                    await loadCart();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(5),
+        height: 70,
+        decoration: BoxDecoration(
+          color: mainColor2,
+          border: Border(top: BorderSide(color: borderColor)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "Tổng tạm tính",
+                  style: TextStyle(
+                    color: white,
+                    fontFamily: "LD",
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  NumberFormat.currency(
+                    locale: 'vi_VN',
+                    symbol: '₫',
+                  ).format(totalPrice),
+                  style: TextStyle(
+                    color: red,
+                    fontFamily: "LD",
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 10),
+            Container(
+              width: getWidth(context) * 0.35,
+              height: 50,
+              margin: const EdgeInsets.only(right: 20),
+              child: ElevatedButton(
+                onPressed: selectedGameIds.isEmpty
+                    ? null
+                    : () {
+                        final selectedItems = cartResponse!.cartItems
+                            .where(
+                              (item) => selectedGameIds.contains(item.gameId),
+                            )
+                            .toList();
+
+                        Navigator.pushNamed(
+                          context,
+                          "orderPage",
+                          arguments: {
+                            'items': selectedItems,
+                            'totalPrice': totalPrice,
+                            'totalQuantity': totalQuantity,
+                            'isCart': 1,
+                          },
+                        );
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: mainColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  "Đặt mua ($totalQuantity)",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "LD",
+                    fontWeight: FontWeight.bold,
+                    color: white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
