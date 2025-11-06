@@ -109,7 +109,7 @@ class ItemProduct extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: "LD",
                       fontWeight: FontWeight.bold,
-                      color: mainColor3,
+                      color: mainColor,
                       fontSize: 12,
                     ),
                   ),
@@ -181,7 +181,7 @@ class ItemProduct extends StatelessWidget {
                     },
                     child: const Icon(
                       Icons.shopping_cart_checkout_outlined,
-                      color: mainColor3,
+                      color: mainColor,
                       size: 25,
                     ),
                   ),

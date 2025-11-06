@@ -122,7 +122,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                 fontSize: 15,
                                 fontFamily: "LD",
                                 fontWeight: FontWeight.bold,
-                                color: mainColor3,
+                                color: mainColor,
                               ),
                             ),
                           ),

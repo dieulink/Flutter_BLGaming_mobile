@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:blgaming_app/screens/home_screens/category_page.dart';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -120,35 +124,35 @@ class _HomePageState extends State<HomePage> {
                         iconPath: "assets/icons/system_icon/24px/Search.png",
                       ),
                     ),
-                    SizedBox(width: 10),
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    CartPage(),
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
-                          ),
-                        );
-                      },
-                      child: Image.asset(
-                        "assets/icons/system_icon/24px/Cart.png",
-                        height: 50,
-                        color: backgroudColor,
-                      ),
-                    ),
+                    //SizedBox(width: 10),
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.of(context).push(
+                    //       PageRouteBuilder(
+                    //         pageBuilder:
+                    //             (context, animation, secondaryAnimation) =>
+                    //                 CartPage(),
+                    //         transitionsBuilder:
+                    //             (
+                    //               context,
+                    //               animation,
+                    //               secondaryAnimation,
+                    //               child,
+                    //             ) {
+                    //               return FadeTransition(
+                    //                 opacity: animation,
+                    //                 child: child,
+                    //               );
+                    //             },
+                    //       ),
+                    //     );
+                    //   },
+                    //   child: Image.asset(
+                    //     "assets/icons/system_icon/24px/Cart.png",
+                    //     height: 50,
+                    //     color: backgroudColor,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -167,23 +171,66 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Stack(
                   children: [
-                    Container(
-                      //color: const Color.fromARGB(255, 28, 56, 142),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            mainColor,
-                            //const Color.fromARGB(120, 28, 56, 142),
-                            mainColor3,
-                          ],
-                        ),
-                      ),
-                      height: 220,
-                    ),
                     Column(
                       children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: CarouselSlider.builder(
+                            itemCount: _bestSaleProducts.length,
+                            itemBuilder: (context, index, realIndex) {
+                              final product = _bestSaleProducts[index];
+                              if (product.imageUrl != null &&
+                                  !product.imageUrl.trim().isEmpty) {
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  width: getWidth(context) - 20,
+                                  height: 170,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.grey[200],
+                                    image: DecorationImage(
+                                      image: NetworkImage(product.imageUrl),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                // fallback placeholder when no image is available
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  width: getWidth(context) - 20,
+                                  height: 170,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.grey[200],
+                                    image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/imgs/default.png',
+                                      ),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            options: CarouselOptions(
+                              height: 170,
+                              autoPlay: true, // 👈 tự động chạy
+                              autoPlayInterval: const Duration(
+                                seconds: 3,
+                              ), // đổi mỗi 3s
+                              autoPlayAnimationDuration: const Duration(
+                                milliseconds: 800,
+                              ),
+                              enlargeCenterPage: true,
+                              viewportFraction: 1, // hiển thị full chiều ngang
+                            ),
+                          ),
+                        ),
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 10,
@@ -199,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                               children: _categories.map((Category) {
                                 return Container(
                                   padding: const EdgeInsets.all(8.0),
-                                  height: 115,
+                                  height: 105,
                                   width: 85,
                                   child: Column(
                                     children: [
@@ -220,21 +267,21 @@ class _HomePageState extends State<HomePage> {
                                           );
                                         },
                                         child: Container(
-                                          height: 60,
-                                          width: 60,
+                                          height: 50,
+                                          width: 70,
                                           decoration: BoxDecoration(
                                             color: backgroudColor,
                                             border: Border.all(
                                               color: backgroudColor,
                                             ),
                                             borderRadius: BorderRadius.circular(
-                                              100,
+                                              10,
                                             ),
                                           ),
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadiusGeometry.circular(
-                                                  100,
+                                                  10,
                                                 ),
                                             child: ClipRRect(
                                               child: Image.network(
@@ -262,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                                         style: TextStyle(
                                           color: white,
                                           fontFamily: "LD",
-                                          fontWeight: FontWeight.bold,
+                                          //fontWeight: FontWeight.bold,
                                           fontSize: 11,
                                         ),
                                         maxLines: 2,
@@ -276,68 +323,125 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-
                         Container(
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 2,
-                          ),
-                          child: Text(
-                            "Tựa Game hot ! ! !",
-                            style: TextStyle(
-                              color: white,
-                              fontFamily: "LD",
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          padding: EdgeInsets.all(10),
+                          height: 240,
+                          width: getWidth(context),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [mainColor, mainColor3],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomRight,
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 2,
-                          ),
-                          child: Row(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: _bestSaleProducts
-                                        // 🔹 Lọc bỏ các sản phẩm không có ảnh hợp lệ
-                                        .where(
-                                          (product) =>
-                                              product.imageUrl != null &&
-                                              product.imageUrl
-                                                  .trim()
-                                                  .isNotEmpty,
-                                        )
-                                        .map((product) {
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 10,
-                                            ),
-                                            width: getWidth(context) - 40,
-                                            height: 120,
-                                            decoration: BoxDecoration(
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/imgs/hot.gif",
+                                    height: 40,
+                                  ),
+                                  Text(
+                                    'Hot Sale !!!',
+                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 13,
+                                      fontFamily: "LD",
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
+
+                                  const DailyCountdown(),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.navigate_next_rounded,
+                                    color: white,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    for (int i = 0; i < 20; i++)
+                                      Container(
+                                        width: 120,
+                                        height: 180,
+                                        margin: EdgeInsets.only(right: 5),
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            5,
+                                          ),
+                                          color: itemColor,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(5),
-                                              color: Colors.grey[200],
-                                              image: DecorationImage(
-                                                image: NetworkImage(
-                                                  product.imageUrl,
-                                                ),
-                                                fit: BoxFit.fitWidth,
-                                                onError:
-                                                    (exception, stackTrace) {},
+                                              child: Image.asset(
+                                                "assets/imgs/background5.png",
+                                                fit: BoxFit.fill,
+                                                height: 90,
+                                                width: 120,
                                               ),
                                             ),
-                                          );
-                                        })
-                                        .toList(),
-                                  ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              "Liên quân Mobile- Thắng bại tại kĩ năng",
+                                              style: TextStyle(
+                                                color: white,
+                                                fontSize: 10,
+                                                fontFamily: "LD",
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              "103.000đ",
+                                              style: TextStyle(
+                                                color: red,
+                                                fontSize: 11,
+                                                fontFamily: "LD",
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "300.000đ",
+                                                  style: TextStyle(
+                                                    color: textColor1,
+                                                    fontSize: 10,
+                                                    fontFamily: "LD",
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                    decorationThickness: 1.5,
+                                                    decorationColor: textColor1,
+                                                  ),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  "-60%",
+                                                  style: TextStyle(
+                                                    color: red,
+                                                    fontSize: 10,
+                                                    fontFamily: "LD",
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -375,6 +479,73 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class DailyCountdown extends StatefulWidget {
+  const DailyCountdown({super.key});
+
+  @override
+  State<DailyCountdown> createState() => _DailyCountdownState();
+}
+
+class _DailyCountdownState extends State<DailyCountdown> {
+  late Timer _timer;
+  Duration _remaining = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _updateRemaining();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateRemaining();
+    });
+  }
+
+  void _updateRemaining() {
+    final now = DateTime.now();
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    setState(() {
+      _remaining = endOfDay.difference(now);
+      if (_remaining.isNegative) {
+        _remaining = const Duration(hours: 24);
+      }
+    });
+  }
+
+  String _format(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return "${twoDigits(d.inHours)} : ${twoDigits(d.inMinutes % 60)} : ${twoDigits(d.inSeconds % 60)}";
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: red,
+      ),
+      child: Text(
+        _format(_remaining),
+        style: const TextStyle(
+          color: white,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          fontFamily: "LD",
         ),
       ),
     );

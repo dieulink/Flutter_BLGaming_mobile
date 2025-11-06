@@ -8,7 +8,7 @@ class AppBarOrder extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: mainColor3,
+      color: mainColor,
       padding: EdgeInsets.only(top: 30, left: 10, right: 25, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

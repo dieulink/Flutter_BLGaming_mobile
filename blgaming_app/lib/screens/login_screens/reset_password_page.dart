@@ -17,7 +17,8 @@ class ResetPasswordPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset("assets/imgs/background.jpg"),
+          Image.asset("assets/imgs/background5.png"),
+          Container(color: const Color.fromARGB(113, 0, 0, 14)),
           SingleChildScrollView(
             child: Container(
               height: getHeight(context),

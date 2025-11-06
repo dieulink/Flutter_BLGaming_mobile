@@ -183,7 +183,7 @@ class _SearchPageState extends State<SearchPage> {
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.normal,
-                            color: isSelected ? mainColor3 : white,
+                            color: isSelected ? mainColor : white,
                           ),
                           maxLines: 2,
                         ),

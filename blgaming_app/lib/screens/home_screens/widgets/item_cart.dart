@@ -93,7 +93,7 @@ class _ItemCartState extends State<ItemCart> {
             ),
           ],
         ),
-        backgroundColor: success ? mainColor3 : Colors.redAccent,
+        backgroundColor: success ? mainColor : Colors.redAccent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(20),
@@ -163,14 +163,14 @@ class _ItemCartState extends State<ItemCart> {
                       style: const TextStyle(
                         fontFamily: "LD",
                         fontWeight: FontWeight.bold,
-                        color: mainColor3,
+                        color: mainColor,
                         fontSize: 15,
                       ),
                     ),
                     Container(
                       height: 30,
                       decoration: BoxDecoration(
-                        color: mainColor3,
+                        color: mainColor,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: borderColor),
                       ),

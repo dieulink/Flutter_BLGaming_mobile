@@ -14,9 +14,11 @@ class RegisterPage extends StatelessWidget {
     final nameController = TextEditingController();
     final phoneController = TextEditingController();
     return Scaffold(
+      backgroundColor: backgroudColor,
       body: Stack(
         children: [
-          Image.asset("assets/imgs/background.jpg"),
+          Image.asset("assets/imgs/background5.png"),
+          Container(color: const Color.fromARGB(113, 0, 0, 14)),
           Container(
             padding: EdgeInsets.all(20),
             height: getHeight(context),
@@ -39,7 +41,7 @@ class RegisterPage extends StatelessWidget {
                       color: white,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                     decoration: BoxDecoration(
@@ -87,6 +89,13 @@ class RegisterPage extends StatelessWidget {
                               'assets/icons/system_icon/24px/Password.png',
                         ),
                         SizedBox(height: 20),
+                        Container(
+                          alignment: Alignment.bottomRight,
+                          child: Image.asset(
+                            "assets/imgs/pacman4.gif",
+                            height: 25,
+                          ),
+                        ),
                         ButtonInputRegister(
                           text: "Đăng kí",
                           emailController: emailController,

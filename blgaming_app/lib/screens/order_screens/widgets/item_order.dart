@@ -80,7 +80,7 @@ class _ItemOrderState extends State<ItemOrder> {
                             style: TextStyle(
                               fontFamily: "LD",
                               fontWeight: FontWeight.bold,
-                              color: mainColor3,
+                              color: mainColor,
                               fontSize: 15,
                             ),
                           ),

@@ -42,6 +42,11 @@ dependencies:
   intl: ^0.18.1
   shared_preferences: ^2.2.2
   jwt_decoder: ^2.0.1
+  carousel_slider: ^5.0.0
+  # flutter_web_auth_2: ^3.0.2
+  # google_sign_in: ^6.2.1
+  dio: ^5.4.0
+
 
 dev_dependencies:
   flutter_test:

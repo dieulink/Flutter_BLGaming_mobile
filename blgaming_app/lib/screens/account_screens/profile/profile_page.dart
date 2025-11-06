@@ -99,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Text(
                     "Chỉnh sửa thông tin",
                     style: TextStyle(
-                      color: mainColor3,
+                      color: mainColor,
                       fontFamily: "LD",
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

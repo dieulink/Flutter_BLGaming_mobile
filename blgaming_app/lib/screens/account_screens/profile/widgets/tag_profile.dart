@@ -34,13 +34,13 @@ class TagProfile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(iconPath, color: mainColor3, height: 30),
+                Image.asset(iconPath, color: mainColor, height: 30),
                 SizedBox(width: 15),
                 Container(
                   child: Text(
                     name,
                     style: TextStyle(
-                      color: mainColor3,
+                      color: mainColor,
                       fontFamily: "LD",
                       fontSize: 15,
                     ),

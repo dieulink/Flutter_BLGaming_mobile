@@ -21,6 +21,7 @@ class _HomePageState extends State<Home> {
   final List<Widget> pages = [
     HomePage(),
     SearchPage(),
+    CartPage(),
     ChatPage(),
     AccountPage(),
   ];
@@ -56,6 +57,7 @@ class _HomePageState extends State<Home> {
             tabs: [
               GButton(icon: Icons.home_sharp, text: ' Trang chủ'),
               GButton(icon: Icons.list_alt_sharp, text: ' Danh mục'),
+              GButton(icon: Icons.shopping_bag_rounded, text: ' Giỏ hàng'),
               GButton(icon: Icons.support_agent_outlined, text: ' Hỗ trợ'),
               GButton(icon: Icons.account_circle_outlined, text: ' Tài khoản'),
             ],

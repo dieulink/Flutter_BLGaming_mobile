@@ -19,14 +19,14 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset("assets/imgs/background.jpg"),
+          Image.asset("assets/imgs/background5.png"),
+          Container(color: const Color.fromARGB(113, 0, 0, 14)),
           Container(
             height: getHeight(context),
             padding: EdgeInsets.all(20),
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 40),
                   Center(
                     child: Image.asset(
                       "assets/imgs/logo_blue.png",
@@ -43,6 +43,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   SizedBox(height: 20),
+                  Container(
+                    alignment: Alignment.bottomRight,
+                    child: Image.asset("assets/imgs/pacman4.gif", height: 25),
+                  ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                     decoration: BoxDecoration(
@@ -89,13 +93,26 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text(
                             "Quên mật khẩu ?",
                             style: TextStyle(
-                              color: mainColor,
+                              color: white,
                               fontFamily: "LD",
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
+                        Container(height: 1, color: borderColor),
+                        SizedBox(height: 10),
+                        Text(
+                          "Hoặc đăng nhập bằng ",
+                          style: TextStyle(
+                            color: textColor2,
+                            fontFamily: "LD",
+                            fontSize: 12,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Image.asset("assets/imgs/gg.png", height: 30),
+                        SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

@@ -19,11 +19,17 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: mainColor,
-      child: Center(
-        child: Image.asset('assets/imgs/logo_white.png', height: 200),
-      ),
+    return Stack(
+      children: [
+        Image.asset("assets/imgs/background5.png"),
+        Container(color: const Color.fromARGB(131, 0, 0, 14)),
+        Container(
+          // color: mainColor,
+          child: Center(
+            child: Image.asset('assets/imgs/logo_blue.png', height: 200),
+          ),
+        ),
+      ],
     );
   }
 }
