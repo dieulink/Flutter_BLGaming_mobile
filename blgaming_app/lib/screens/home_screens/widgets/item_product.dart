@@ -39,24 +39,57 @@ class ItemProduct extends StatelessWidget {
         ),
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadiusGeometry.vertical(
-                top: Radius.circular(10),
-              ),
-              child: Image.network(
-                product.imageUrl,
-                height: 150,
-                width: getWidth(context),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    'assets/imgs/default.png',
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadiusGeometry.vertical(
+                    top: Radius.circular(10),
+                  ),
+                  child: Image.network(
+                    product.imageUrl,
                     height: 150,
                     width: getWidth(context),
                     fit: BoxFit.cover,
-                  );
-                },
-              ),
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/imgs/default.png',
+                        height: 150,
+                        width: getWidth(context),
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ),
+                product.salePercent > 0
+                    ? Container(
+                        alignment: Alignment.topRight,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 5,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 5,
+                          ),
+
+                          child: Text(
+                            "- ${product.salePercent} %",
+                            style: TextStyle(
+                              color: white,
+                              fontFamily: "LD",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
+              ],
             ),
             SizedBox(height: 10),
             Container(
@@ -70,7 +103,7 @@ class ItemProduct extends StatelessWidget {
                   fontFamily: "LD",
                   //fontWeight: FontWeight.bold,
                   color: white,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
             ),
@@ -98,97 +131,84 @@ class ItemProduct extends StatelessWidget {
               ],
             ),
             SizedBox(height: 7),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "${NumberFormat("#,###", "vi_VN").format(product.price)} vnđ",
-                    style: const TextStyle(
-                      fontFamily: "LD",
-                      fontWeight: FontWeight.bold,
-                      color: mainColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  child: InkWell(
-                    onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      final userId = prefs.getString('userId');
-
-                      if (userId == null || userId.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              "Vui lòng đăng nhập để thêm vào giỏ hàng!",
-                            ),
-                            backgroundColor: Colors.redAccent,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            margin: const EdgeInsets.all(20),
-                            duration: const Duration(seconds: 2),
+            product.salePercent > 0
+                ? Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "${NumberFormat("#,###", "vi_VN").format(product.price)} vnđ",
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 13,
+                            fontFamily: "LD",
+                            decoration: TextDecoration.lineThrough,
+                            decorationThickness: 1.5,
+                            decorationColor: textColor1,
                           ),
-                        );
-                        return;
-                      }
-
-                      final response = await CartService.updateCartQuantity(
-                        gameId: product.id,
-                        userId: userId,
-                        quantity: 1, // mỗi lần bấm thêm 1 sản phẩm
-                      );
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(
-                                response != null
-                                    ? Icons.check_circle_outline
-                                    : Icons.error_outline,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  response != null
-                                      ? "Đã thêm 1 sản phẩm vào giỏ hàng"
-                                      : "Thêm vào giỏ hàng thất bại",
-                                  style: const TextStyle(fontFamily: "LD"),
-                                ),
-                              ),
-                            ],
-                          ),
-                          backgroundColor: response != null
-                              ? Colors.green
-                              : Colors.redAccent,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.all(20),
-                          duration: const Duration(seconds: 1),
-                          elevation: 8,
                         ),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.shopping_cart_checkout_outlined,
-                      color: mainColor,
-                      size: 25,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "${NumberFormat("#,###", "vi_VN").format(product.price * (100 - product.salePercent) / 100)} vnđ",
+                              style: const TextStyle(
+                                fontFamily: "LD",
+                                fontWeight: FontWeight.bold,
+                                color: red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //     color: red,
+                          //     borderRadius: BorderRadius.circular(3),
+                          //   ),
+                          //   margin: const EdgeInsets.symmetric(horizontal: 10),
+                          //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                          //   alignment: Alignment.centerLeft,
+                          //   child: Text(
+                          //     " - ${product.salePercent} %",
+                          //     style: const TextStyle(
+                          //       fontFamily: "LD",
+                          //       color: white,
+                          //       fontSize: 12,
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "${NumberFormat("#,###", "vi_VN").format(product.price)} vnđ",
+                      style: const TextStyle(
+                        fontFamily: "LD",
+                        fontWeight: FontWeight.bold,
+                        color: mainColor,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
-                ),
-              ],
+            SizedBox(height: 5),
+            Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                "Chỉ còn ${product.stock} ",
+                style: TextStyle(color: white, fontSize: 10, fontFamily: "LD"),
+              ),
             ),
-
             SizedBox(height: 10),
           ],
         ),

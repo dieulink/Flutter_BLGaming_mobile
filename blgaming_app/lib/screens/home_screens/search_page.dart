@@ -90,12 +90,12 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 29, 29, 29),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70),
         child: SafeArea(
           child: Container(
             color: mainColor,
-
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -149,11 +149,18 @@ class _SearchPageState extends State<SearchPage> {
                       horizontal: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.transparent : mainColor,
+                      color: isSelected
+                          ? Colors.transparent
+                          : const Color.fromARGB(255, 48, 48, 48),
                       border: Border(
                         left: BorderSide(
-                          //color: isSelected ?  : Colors.transparent,
+                          color: isSelected ? mainColor : Colors.transparent,
                           width: 3,
+                        ),
+                        bottom: BorderSide(
+                          //color: const Color.fromARGB(88, 0, 0, 0),
+                          color: const Color.fromARGB(80, 55, 183, 233),
+                          width: 1,
                         ),
                       ),
                     ),
@@ -197,13 +204,29 @@ class _SearchPageState extends State<SearchPage> {
 
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(10),
+              color: const Color.fromARGB(255, 22, 22, 22),
+              margin: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.all(10),
               child: _products.isEmpty && !isLoading
-                  ? const Center(
-                      child: Text(
-                        "Không có sản phẩm nào trong danh mục này",
-                        style: TextStyle(fontFamily: "LD"),
-                      ),
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 10),
+                          child: Image.asset(
+                            "assets/imgs/chatbot5.gif",
+                            height: 100,
+                          ),
+                        ),
+                        Text(
+                          "Không có sản phẩm nào trong danh mục này",
+                          style: TextStyle(
+                            fontFamily: "LD",
+                            color: white,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     )
                   : AnimatedOpacity(
                       duration: const Duration(milliseconds: 250),

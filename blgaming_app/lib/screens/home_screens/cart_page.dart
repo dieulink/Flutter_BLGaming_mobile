@@ -78,14 +78,18 @@ class _CartPageState extends State<CartPage> {
       return Scaffold(
         appBar: AppBarCartCustom(),
         body: Center(
-          child: Text(
-            "Giỏ hàng trống",
-            style: TextStyle(
-              color: white,
-              fontFamily: "LD",
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 10),
+                child: Image.asset("assets/imgs/chatbot5.gif", height: 100),
+              ),
+              Text(
+                "Không có sản phẩm",
+                style: TextStyle(fontFamily: "LD", color: white, fontSize: 13),
+              ),
+            ],
           ),
         ),
       );

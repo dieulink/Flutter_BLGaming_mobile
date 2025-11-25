@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:blgaming_app/models/response/big_sale_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:blgaming_app/models/response/item.dart';
 import 'package:blgaming_app/models/response/product.dart';
@@ -105,6 +106,27 @@ class ProductService {
       }
     } catch (e, s) {
       print("Lỗi search(): $e\n$s");
+      return [];
+    }
+  }
+
+  static Future<List<BigSaleItem>> fetchBigSaleToday() async {
+    try {
+      final url = Uri.parse(
+        "http://192.168.5.138:8080/api/public/bigsale/today",
+      );
+      final res = await http.get(url);
+      print(jsonDecode(res.body));
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final List<dynamic> items = data["items"] ?? [];
+        return items.map((e) => BigSaleItem.fromJson(e)).toList();
+      } else {
+        throw Exception("Failed BigSale: ${res.statusCode}");
+      }
+    } catch (e) {
+      print("ERR fetchBigSale: $e");
       return [];
     }
   }

@@ -81,14 +81,27 @@ class _SearchItemPageState extends State<SearchItemPage> {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: products.isEmpty
-            ? const Center(
-                child: Text(
-                  "Không tìm thấy game",
-                  style: TextStyle(
-                    color: white,
-                    fontFamily: "LD",
-                    fontWeight: FontWeight.bold,
-                  ),
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      child: Image.asset(
+                        "assets/imgs/chatbot5.gif",
+                        height: 100,
+                      ),
+                    ),
+                    Text(
+                      "Không tìm thấy sản phẩm",
+                      style: TextStyle(
+                        fontFamily: "LD",
+                        color: white,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
                 ),
               )
             : MasonryGridView.count(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:blgaming_app/ui_value.dart';
+import 'package:flutter/scheduler.dart';
 
 class SearchInput extends StatelessWidget {
   final String hintText;
@@ -31,7 +32,11 @@ class SearchInput extends StatelessWidget {
             SizedBox(width: 10),
             Text(
               hintText,
-              style: TextStyle(color: white, fontFamily: "LD", fontSize: 15),
+              style: TextStyle(
+                color: textColor1,
+                fontFamily: "LD",
+                fontSize: 15,
+              ),
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:blgaming_app/screens/home_screens/voucher_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:blgaming_app/screens/home_screens/account_page.dart';
@@ -21,8 +22,8 @@ class _HomePageState extends State<Home> {
   final List<Widget> pages = [
     HomePage(),
     SearchPage(),
-    CartPage(),
     ChatPage(),
+    VoucherPage(),
     AccountPage(),
   ];
 
@@ -57,8 +58,8 @@ class _HomePageState extends State<Home> {
             tabs: [
               GButton(icon: Icons.home_sharp, text: ' Trang chủ'),
               GButton(icon: Icons.list_alt_sharp, text: ' Danh mục'),
-              GButton(icon: Icons.shopping_bag_rounded, text: ' Giỏ hàng'),
               GButton(icon: Icons.support_agent_outlined, text: ' Hỗ trợ'),
+              GButton(icon: Icons.discount_outlined, text: ' Mã giảm giá'),
               GButton(icon: Icons.account_circle_outlined, text: ' Tài khoản'),
             ],
             selectedIndex: selectedIndex,

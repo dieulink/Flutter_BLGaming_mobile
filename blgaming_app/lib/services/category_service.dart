@@ -53,6 +53,4 @@ class CategoryService {
       return [];
     }
   }
-
-  //search in category
 }

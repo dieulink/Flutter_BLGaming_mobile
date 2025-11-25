@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:blgaming_app/models/response/big_sale_item.dart';
 import 'package:blgaming_app/screens/home_screens/category_page.dart';
+import 'package:blgaming_app/screens/home_screens/product_detail.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +18,7 @@ import 'package:blgaming_app/screens/home_screens/widgets/search_input.dart';
 import 'package:blgaming_app/services/category_service.dart';
 import 'package:blgaming_app/services/product_service.dart';
 import 'package:blgaming_app/ui_value.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   List<Product> _products = [];
   List<ProductCategory> _categories = [];
   List<Product> _bestSaleProducts = [];
+  List<BigSaleItem> _bigSaleItems = [];
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 0;
@@ -42,7 +46,13 @@ class _HomePageState extends State<HomePage> {
     _loadProducts();
     _loadCategories();
     _loadBestSale();
+    _loadBigSale();
     _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _loadBigSale() async {
+    final list = await ProductService.fetchBigSaleToday();
+    setState(() => _bigSaleItems = list);
   }
 
   Future<void> _loadCategories() async {
@@ -124,35 +134,35 @@ class _HomePageState extends State<HomePage> {
                         iconPath: "assets/icons/system_icon/24px/Search.png",
                       ),
                     ),
-                    //SizedBox(width: 10),
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).push(
-                    //       PageRouteBuilder(
-                    //         pageBuilder:
-                    //             (context, animation, secondaryAnimation) =>
-                    //                 CartPage(),
-                    //         transitionsBuilder:
-                    //             (
-                    //               context,
-                    //               animation,
-                    //               secondaryAnimation,
-                    //               child,
-                    //             ) {
-                    //               return FadeTransition(
-                    //                 opacity: animation,
-                    //                 child: child,
-                    //               );
-                    //             },
-                    //       ),
-                    //     );
-                    //   },
-                    //   child: Image.asset(
-                    //     "assets/icons/system_icon/24px/Cart.png",
-                    //     height: 50,
-                    //     color: backgroudColor,
-                    //   ),
-                    // ),
+
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    CartPage(),
+                            transitionsBuilder:
+                                (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                          ),
+                        );
+                      },
+                      child: Image.asset(
+                        "assets/icons/system_icon/24px/Cart.png",
+                        height: 50,
+                        color: backgroudColor,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -197,7 +207,6 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 );
                               } else {
-                                // fallback placeholder when no image is available
                                 return Container(
                                   margin: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -219,15 +228,13 @@ class _HomePageState extends State<HomePage> {
                             },
                             options: CarouselOptions(
                               height: 170,
-                              autoPlay: true, // 👈 tự động chạy
-                              autoPlayInterval: const Duration(
-                                seconds: 3,
-                              ), // đổi mỗi 3s
+                              autoPlay: true,
+                              autoPlayInterval: const Duration(seconds: 3),
                               autoPlayAnimationDuration: const Duration(
                                 milliseconds: 800,
                               ),
                               enlargeCenterPage: true,
-                              viewportFraction: 1, // hiển thị full chiều ngang
+                              viewportFraction: 1,
                             ),
                           ),
                         ),
@@ -367,78 +374,129 @@ class _HomePageState extends State<HomePage> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-                                    for (int i = 0; i < 20; i++)
-                                      Container(
-                                        width: 120,
-                                        height: 180,
-                                        margin: EdgeInsets.only(right: 5),
-                                        padding: EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            5,
+                                    for (final item in _bigSaleItems)
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            PageRouteBuilder(
+                                              pageBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) => ProductDetail(
+                                                    id: item.gameId,
+                                                  ),
+                                              transitionsBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                    child,
+                                                  ) {
+                                                    return FadeTransition(
+                                                      opacity: animation,
+                                                      child: child,
+                                                    );
+                                                  },
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: 120,
+                                          height: 180,
+                                          margin: EdgeInsets.only(right: 5),
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
+                                            color: itemColor,
                                           ),
-                                          color: itemColor,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              child: Image.asset(
-                                                "assets/imgs/background5.png",
-                                                fit: BoxFit.fill,
-                                                height: 90,
-                                                width: 120,
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Text(
-                                              "Liên quân Mobile- Thắng bại tại kĩ năng",
-                                              style: TextStyle(
-                                                color: white,
-                                                fontSize: 10,
-                                                fontFamily: "LD",
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Text(
-                                              "103.000đ",
-                                              style: TextStyle(
-                                                color: red,
-                                                fontSize: 11,
-                                                fontFamily: "LD",
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "300.000đ",
-                                                  style: TextStyle(
-                                                    color: textColor1,
-                                                    fontSize: 10,
-                                                    fontFamily: "LD",
-                                                    decoration: TextDecoration
-                                                        .lineThrough,
-                                                    decorationThickness: 1.5,
-                                                    decorationColor: textColor1,
-                                                  ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                child: Image.network(
+                                                  item.imageUrl,
+                                                  fit: BoxFit.fill,
+                                                  height: 90,
+                                                  width: 120,
+                                                  errorBuilder: (c, e, s) =>
+                                                      Image.asset(
+                                                        "assets/imgs/default.png",
+                                                        height: 90,
+                                                        width: 120,
+                                                        fit: BoxFit.fill,
+                                                      ),
                                                 ),
-                                                Spacer(),
-                                                Text(
-                                                  "-60%",
-                                                  style: TextStyle(
-                                                    color: red,
-                                                    fontSize: 10,
-                                                    fontFamily: "LD",
-                                                  ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text(
+                                                item.gameName,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: white,
+                                                  fontSize: 10,
+                                                  fontFamily: "LD",
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                              //SizedBox(height: 5),
+                                              Spacer(),
+                                              Text(
+                                                "${NumberFormat("#,###", "vi_VN").format(item.salePrice)} vnđ",
+                                                style: TextStyle(
+                                                  color: red,
+                                                  fontSize: 12,
+                                                  fontFamily: "LD",
+                                                ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "${item.originalPrice.toStringAsFixed(0)}đ",
+                                                    style: TextStyle(
+                                                      color: textColor1,
+
+                                                      fontSize: 10,
+                                                      fontFamily: "LD",
+                                                      decoration: TextDecoration
+                                                          .lineThrough,
+                                                      decorationThickness: 1.5,
+                                                      decorationColor:
+                                                          textColor1,
+                                                    ),
+                                                  ),
+                                                  Spacer(),
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            2,
+                                                          ),
+                                                      color: white,
+                                                    ),
+                                                    padding: EdgeInsets.all(2),
+                                                    child: Text(
+                                                      "-${item.discountPercent}%",
+                                                      style: TextStyle(
+                                                        color: red,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 10,
+                                                        fontFamily: "LD",
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                   ],

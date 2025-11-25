@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:blgaming_app/ui_value.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:blgaming_app/models/response/product.dart';
@@ -77,7 +78,23 @@ class _ItemPageState extends State<CategoryPage> {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: products.isEmpty
-            ? const Center(child: Text("Không tìm thấy sản phẩm"))
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Image.asset("assets/imgs/chatbot5.gif", height: 100),
+                  ),
+                  Text(
+                    "Không tìm thấy sản phẩm",
+                    style: TextStyle(
+                      fontFamily: "LD",
+                      color: white,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              )
             : MasonryGridView.count(
                 controller: _scrollController,
                 crossAxisCount: 2,
