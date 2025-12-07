@@ -1,8 +1,15 @@
+import 'package:blgaming_app/models/request/gg_login_request.dart';
+import 'package:blgaming_app/models/request/user_login_request.dart';
+import 'package:blgaming_app/services/login_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:blgaming_app/screens/login_screens/widgets/app_bar_login.dart';
 import 'package:blgaming_app/screens/login_screens/widgets/button_input_login.dart';
 import 'package:blgaming_app/screens/login_screens/widgets/text_input.dart';
 import 'package:blgaming_app/ui_value.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +21,97 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  static const List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'openid',
+  ];
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId:
+        '428940770122-s0rn6otg8ca3gpdjsht8gokssfvee3as.apps.googleusercontent.com',
+    scopes: scopes,
+  );
+
+  signInWithGoogle() async {
+    _googleSignIn.signOut();
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final credential = firebaseAuth.GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      final request = GgLoginRequest(idToken: credential.idToken!);
+      final response = await LoginService.loginWithGoogle(request);
+      if (response == null) {
+        return null;
+      }
+      print(
+        "Token value: ${response?.token}, isNull: ${response?.token == null}",
+      );
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getString("token") != null) {
+        final prefs = await SharedPreferences.getInstance();
+        String role = prefs.getString('role') ?? '';
+        if (role == 'ROLE_ADMIN') {
+          Navigator.pushNamed(context, "adminPage");
+        } else if (role == 'ROLE_USER') {
+          Navigator.pushNamed(context, "home");
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Vai trò không hợp lệ",
+                style: TextStyle(fontFamily: "LD"),
+              ),
+              backgroundColor: textColor1,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              margin: const EdgeInsets.all(30),
+              duration: const Duration(seconds: 1),
+              elevation: 8,
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    response!.message,
+                    style: TextStyle(fontFamily: "LD"),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: textColor1,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(30),
+            duration: const Duration(seconds: 1),
+            elevation: 8,
+          ),
+        );
+      }
+    } catch (err) {
+      // AppToast.showCustomError(
+      //     'Hệ thống đang gặp sự cố, vui lòng thử lại sau.');
+      return err.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +209,10 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Image.asset("assets/imgs/gg.png", height: 30),
+                        InkWell(
+                            onTap: signInWithGoogle,
+                            child:
+                                Image.asset("assets/imgs/gg.png", height: 30)),
                         SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
