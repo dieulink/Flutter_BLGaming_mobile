@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "428940770122",
+    "project_id": "blgaming",
+    "storage_bucket": "blgaming.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428940770122:android:10356a5d291c0410305fb3",
+        "android_client_info": {
+          "package_name": "com.example.blgaming_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "428940770122-s0rn6otg8ca3gpdjsht8gokssfvee3as.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqQ02Q_7EuY_351TzKvyBHP95b3_stXQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "428940770122-s0rn6otg8ca3gpdjsht8gokssfvee3as.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

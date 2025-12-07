@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:blgaming_app/models/request/gg_login_request.dart';
 import 'package:blgaming_app/models/response/register_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -132,6 +133,62 @@ class LoginService {
       }
     } catch (e) {
       print("Lỗi resetPassword: $e");
+      return null;
+    }
+  }
+
+  static Future<LoginResponse?> loginWithGoogle(GgLoginRequest req) async {
+    final url = Uri.parse('http://10.0.2.2:8080/api/auth/google');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(req.toJson()),
+      );
+
+      print("Google Login Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        if (json['accessToken'] != null &&
+            json['accessToken'].toString().isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+
+          Map<String, dynamic> decodedToken = JwtDecoder.decode(
+            json['accessToken'],
+          );
+
+          print("Decoded Token Google: $decodedToken");
+
+          String userId = decodedToken['userId'] ?? '';
+          String name = decodedToken['fullName'] ?? '';
+          String email = decodedToken['sub'] ?? '';
+          String role = decodedToken['role'] ?? '';
+          String phone = decodedToken['phone'] ?? '';
+
+          await prefs.setString('token', json['accessToken']);
+          await prefs.setString('userId', userId);
+          await prefs.setString('name', name);
+          await prefs.setString('email', email);
+          await prefs.setString('role', role);
+          await prefs.setString('phone', phone);
+
+          print("--- SharedPreferences (Google Login) ---");
+          print("ID: ${prefs.getString('userId')}");
+          print("Tên: ${prefs.getString('name')}");
+          print("Email: ${prefs.getString('email')}");
+          print("Vai trò: ${prefs.getString('role')}");
+          print("Token: ${prefs.getString('token')}");
+        }
+
+        return LoginResponse.fromJson(json);
+      } else {
+        print('Google Login Failed: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Lỗi khi gọi API Google Login: $e');
       return null;
     }
   }

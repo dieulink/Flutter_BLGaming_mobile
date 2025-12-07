@@ -1,4 +1,5 @@
 import 'package:blgaming_app/ui_value.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:blgaming_app/screens/account_screens/list_order/detail_ordered.dart';
 import 'package:blgaming_app/screens/account_screens/list_order/done_order_page.dart';
@@ -23,8 +24,10 @@ import 'package:blgaming_app/screens/rating/rating_page.dart';
 import 'package:blgaming_app/screens/rating/write_rating_page.dart';
 import 'package:blgaming_app/screens/rating/your_rating_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
