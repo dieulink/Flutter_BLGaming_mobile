@@ -24,9 +24,9 @@ class PaypalItem {
   }
 }
 
-class Paypal extends StatelessWidget {
+class PaypalView extends StatelessWidget {
   final List<PaypalItem> items;
-  const Paypal({Key? key, required this.items}) : super(key: key);
+  const PaypalView({Key? key, required this.items}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     double totalAmount =
@@ -60,13 +60,17 @@ class Paypal extends StatelessWidget {
       note: "Contact us for any questions on your order.",
       onSuccess: (Map params) async {
         print("onSuccess: $params");
+        //todo: nav to success page
         Navigator.pop(context);
       },
       onError: (error) {
         print("onError: $error");
+        //todo: show error message and nav to failure page
         Navigator.pop(context);
       },
       onCancel: () {
+        //todo: nav to failure page
+
         print('cancelled:');
       },
     );
