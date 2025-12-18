@@ -23,7 +23,7 @@ class ItemRating extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 5),
-          Container(height: 1, color: backgroudColor),
+          Container(height: 1, color: mainColor2),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,7 +46,7 @@ class ItemRating extends StatelessWidget {
                       fontSize: 13,
                       fontFamily: "LD",
                       fontWeight: FontWeight.bold,
-                      color: textColor3,
+                      color: white,
                     ),
                   ),
                 ],
@@ -56,7 +56,7 @@ class ItemRating extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: "LD",
-                  color: textColor3,
+                  color: white,
                 ),
               ),
             ],

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:blgaming_app/screens/home_screens/home.dart';
 import 'package:blgaming_app/ui_value.dart';
 
-class AppBarChatbot extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarChatbot({super.key});
+class AppBarVoucher extends StatelessWidget implements PreferredSizeWidget {
+  const AppBarVoucher({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +15,11 @@ class AppBarChatbot extends StatelessWidget implements PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            margin: EdgeInsets.only(right: 10),
-            child: Image.asset("assets/imgs/chatbot2.gif", height: 50),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 15),
+            margin: EdgeInsets.only(top: 15, left: 20),
             child: Text(
-              "BL-Gaming Chatbot",
+              "Mã giảm giá",
               style: TextStyle(
-                // color: mainColor,
+                //   color: mainColor,
                 color: white,
                 fontFamily: "LD",
                 fontSize: 18,
@@ -32,6 +28,10 @@ class AppBarChatbot extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           Spacer(),
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            child: Image.asset("assets/imgs/chatbot3.gif", height: 50),
+          ),
           // Container(
           //   margin: EdgeInsets.only(right: 10),
           //   child: Image.asset("assets/imgs/chatbot4.gif", height: 40),

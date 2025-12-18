@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:blgaming_app/services/cart_service.dart';
 import 'package:blgaming_app/ui_value.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ItemOrder extends StatefulWidget {
+class ItemOrder extends StatelessWidget {
   final String imgPath;
   final String name;
   final double price;
   final int quantity;
   final int productId;
+  final int salePercent;
 
   const ItemOrder({
     super.key,
@@ -18,85 +17,82 @@ class ItemOrder extends StatefulWidget {
     required this.price,
     required this.quantity,
     required this.productId,
+    required this.salePercent,
   });
 
-  @override
-  State<ItemOrder> createState() => _ItemOrderState();
-}
+  double get priceAfterSale => price - price * (salePercent / 100);
 
-class _ItemOrderState extends State<ItemOrder> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           height: 100,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: mainColor2,
-
-            //border: Border.all(color: borderColor),
             borderRadius: BorderRadius.circular(7),
           ),
           child: Row(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Image.network(
-                widget.imgPath,
+                imgPath,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset("assets/imgs/default.jpg");
-                },
+                errorBuilder: (_, __, ___) =>
+                    Image.asset("assets/imgs/default.jpg"),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Container(
-                      //alignment: Alignment.centerLeft,
+                    SizedBox(
                       width: double.infinity,
-                      padding: EdgeInsets.only(right: 10),
                       child: Text(
-                        widget.name,
+                        name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: "LD",
                           fontWeight: FontWeight.bold,
                           color: white,
                           fontSize: 13,
                         ),
-                        //textAlign: TextAlign.left,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          child: Text(
-                            "${NumberFormat("#,###", "vi_VN").format(widget.price)}",
-                            style: TextStyle(
-                              fontFamily: "LD",
-                              fontWeight: FontWeight.bold,
-                              color: mainColor,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          height: 30,
-                          padding: EdgeInsets.only(right: 10),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Text(
-                              "x ${widget.quantity}",
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              NumberFormat("#,###", "vi_VN")
+                                  .format(priceAfterSale),
                               style: const TextStyle(
-                                fontSize: 13,
-                                color: white,
+                                fontFamily: "LD",
+                                fontWeight: FontWeight.bold,
+                                color: red,
+                                fontSize: 12,
                               ),
                             ),
+                            if (salePercent > 0)
+                              Text(
+                                NumberFormat("#,###", "vi_VN").format(price),
+                                style: const TextStyle(
+                                  fontFamily: "LD",
+                                  fontSize: 11,
+                                  color: textColor2,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                          ],
+                        ),
+                        Text(
+                          "x $quantity",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: white,
                           ),
                         ),
                       ],

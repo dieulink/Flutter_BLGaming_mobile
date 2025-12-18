@@ -138,7 +138,7 @@ class LoginService {
   }
 
   static Future<LoginResponse?> loginWithGoogle(GgLoginRequest req) async {
-    final url = Uri.parse('http://10.0.2.2:8080/api/auth/google');
+    final url = Uri.parse('http://192.168.5.138:8080/api/auth/google');
 
     try {
       final response = await http.post(

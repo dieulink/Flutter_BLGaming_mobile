@@ -1,3 +1,4 @@
+import 'package:blgaming_app/models/response/cart_response.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:blgaming_app/services/cart_service.dart';
@@ -10,6 +11,7 @@ class ItemCart extends StatefulWidget {
   final int price;
   final int quantity;
   final int productId;
+  final int salePercent;
   final VoidCallback onDeleteSuccess;
   final VoidCallback onIncreaseSuccess;
   final VoidCallback onDecreaseSuccess;
@@ -21,6 +23,7 @@ class ItemCart extends StatefulWidget {
     required this.price,
     required this.quantity,
     required this.productId,
+    required this.salePercent,
     required this.onDeleteSuccess,
     required this.onIncreaseSuccess,
     required this.onDecreaseSuccess,
@@ -37,7 +40,7 @@ class _ItemCartState extends State<ItemCart> {
       userId,
     );
 
-    if (statusCode == 200) {
+    if (statusCode == 200 || statusCode == 204) {
       widget.onDeleteSuccess();
       _showSnackBar(context, "Đã xóa sản phẩm khỏi giỏ hàng", success: true);
     } else {
@@ -49,25 +52,22 @@ class _ItemCartState extends State<ItemCart> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
 
-    if (userId == null || userId.isEmpty) {
-      _showSnackBar(context, "Vui lòng đăng nhập để thao tác giỏ hàng!");
-      return;
-    }
+    if (userId == null) return;
 
-    // Nếu đang giảm và số lượng hiện tại = 1 → gọi API xóa
-    if (change < 0 && widget.quantity == 1) {
+    if (change < 0 && widget.quantity <= 1) {
       await _deleteItem(userId);
       return;
     }
 
-    final statusCode = await CartService.updateCartQuantity(
+    final isSuccess = await CartService.updateCartQuantity(
       gameId: widget.productId,
       userId: userId,
       quantity: change,
     );
 
-    if (statusCode == 200) {
+    if (isSuccess) {
       change > 0 ? widget.onIncreaseSuccess() : widget.onDecreaseSuccess();
+      _showSnackBar(context, "Cập nhật số lượng thành công", success: true);
     } else {
       _showSnackBar(
         context,
@@ -93,7 +93,7 @@ class _ItemCartState extends State<ItemCart> {
             ),
           ],
         ),
-        backgroundColor: success ? mainColor : Colors.redAccent,
+        backgroundColor: success ? Colors.green : Colors.redAccent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(20),
@@ -115,8 +115,10 @@ class _ItemCartState extends State<ItemCart> {
           Image.network(
             widget.imgPath,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                Image.asset("assets/imgs/default.png"),
+            errorBuilder: (context, error, stackTrace) => Image.asset(
+              "assets/imgs/default.jpg",
+              width: 100,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -126,7 +128,7 @@ class _ItemCartState extends State<ItemCart> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: getWidth(context) * 0.4,
+                      width: getWidth(context) * 0.35,
                       child: Text(
                         widget.name,
                         maxLines: 2,
@@ -147,9 +149,9 @@ class _ItemCartState extends State<ItemCart> {
                         await _deleteItem(userId);
                       },
                       child: const Icon(
-                        Icons.delete_outline,
+                        Icons.delete_forever,
                         color: textColor2,
-                        size: 32,
+                        size: 25,
                       ),
                     ),
                   ],
@@ -158,21 +160,39 @@ class _ItemCartState extends State<ItemCart> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "${NumberFormat("#,###", "vi_VN").format(widget.price)}",
-                      style: const TextStyle(
-                        fontFamily: "LD",
-                        fontWeight: FontWeight.bold,
-                        color: mainColor,
-                        fontSize: 15,
-                      ),
+                    Column(
+                      children: [
+                        Text(
+                          "${NumberFormat("#,###", "vi_VN").format(widget.price - widget.price * (widget.salePercent / 100))}",
+                          style: const TextStyle(
+                            fontFamily: "LD",
+                            fontWeight: FontWeight.bold,
+                            color: red,
+                            fontSize: 11,
+                          ),
+                        ),
+                        if (widget.salePercent > 0)
+                          Text(
+                            "${NumberFormat("#,###", "vi_VN").format(widget.price)} ",
+                            style: const TextStyle(
+                              fontFamily: "LD",
+                              fontWeight: FontWeight.bold,
+                              color: textColor2,
+                              fontSize: 12,
+                              decoration: TextDecoration.lineThrough,
+                              decorationThickness: 1,
+                              decorationColor: textColor1,
+                            ),
+                          ),
+                      ],
                     ),
                     Container(
                       height: 30,
                       decoration: BoxDecoration(
-                        color: mainColor,
+                        // color: mainCol,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: borderColor),
+                        border: Border.all(
+                            color: const Color.fromARGB(214, 55, 183, 233)),
                       ),
                       child: Row(
                         children: [

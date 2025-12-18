@@ -23,7 +23,7 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final int? productId = args?['productId'];
     return Scaffold(
-      backgroundColor: white,
+      //backgroundColor: white,
       appBar: AppBarRating(name: "Viết đánh giá"),
       body: Container(
         padding: EdgeInsets.all(20),
@@ -80,13 +80,13 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: textColor3,
+                    color: white,
                     fontFamily: 'LD',
                   ),
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: 'Nhập nội dung đánh giá ...',
-                    hintStyle: TextStyle(color: textColor2),
+                    hintStyle: TextStyle(color: white),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: borderColor, width: 1),
@@ -109,7 +109,7 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          //   color: Colors.white,
           border: Border(top: BorderSide(color: borderColor)),
         ),
         child: Container(

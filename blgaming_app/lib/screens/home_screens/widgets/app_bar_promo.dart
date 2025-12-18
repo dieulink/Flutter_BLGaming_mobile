@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:blgaming_app/screens/home_screens/home.dart';
 import 'package:blgaming_app/ui_value.dart';
 
-class AppBarRating extends StatelessWidget implements PreferredSizeWidget {
-  final String name;
-  const AppBarRating({super.key, required this.name});
+class AppBarPromo extends StatelessWidget implements PreferredSizeWidget {
+  const AppBarPromo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +11,13 @@ class AppBarRating extends StatelessWidget implements PreferredSizeWidget {
       color: mainColor,
       padding: EdgeInsets.only(top: 30, left: 10, right: 25, bottom: 10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(width: 10),
           Container(
             margin: EdgeInsets.only(top: 15),
             child: Row(
               children: [
+                SizedBox(width: 10),
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
@@ -29,15 +30,33 @@ class AppBarRating extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 SizedBox(width: 10),
                 Text(
-                  name,
+                  "Chi tiết mã giảm giá",
                   style: TextStyle(
                     color: white,
                     fontFamily: "LD",
-                    fontSize: 17,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      Home(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 10),
+              child: Icon(Icons.home, color: backgroudColor, size: 25),
             ),
           ),
         ],

@@ -128,6 +128,7 @@ class _DetailOrderedState extends State<DetailOrdered> {
                     price: item.productPrice.toDouble(),
                     quantity: item.quantity,
                     productId: item.productId,
+                    salePercent: 0,
                   );
                 }).toList(),
               ),

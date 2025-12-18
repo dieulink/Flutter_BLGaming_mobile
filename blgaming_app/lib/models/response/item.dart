@@ -8,6 +8,7 @@ class Item {
   final int stock;
   final double reviewScore;
   final int reviewCount;
+  final int salePercent;
 
   Item({
     required this.id,
@@ -19,6 +20,7 @@ class Item {
     required this.stock,
     required this.reviewScore,
     required this.reviewCount,
+    required this.salePercent,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -42,12 +44,12 @@ class Item {
       name: detail['name'] ?? '',
       description: detail['description'] ?? '',
       price: double.tryParse(detail['price'].toString()) ?? 0.0,
-
       imageUrl: mainImage,
       descImages: descImages,
       stock: detail['in_stock'] ?? 0,
       reviewScore: (detail['review_score'] as num?)?.toDouble() ?? 0.0,
       reviewCount: detail['review_count'] ?? 0,
+      salePercent: detail['sale_percent'] ?? 0,
     );
   }
 }

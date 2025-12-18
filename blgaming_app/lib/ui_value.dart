@@ -12,7 +12,7 @@ const borderColor = Color.fromARGB(28, 204, 209, 219);
 const red = Color.fromARGB(255, 243, 31, 31);
 const red2 = Color.fromARGB(255, 206, 66, 66);
 const backgroudColor = Color.fromARGB(255, 0, 0, 0);
-const mainColor2 = Color.fromARGB(104, 28, 56, 142);
+const mainColor2 = Color.fromARGB(98, 33, 47, 88);
 const itemColor = Color.fromARGB(255, 19, 24, 32);
 const mainColor3 = Color(0xff4B4CED);
 

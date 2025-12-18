@@ -5,6 +5,7 @@ class CartItemModel {
   final double price;
   final int inStock;
   final int quantity;
+  final int salePercent;
 
   CartItemModel({
     required this.gameId,
@@ -13,6 +14,7 @@ class CartItemModel {
     required this.price,
     required this.inStock,
     required this.quantity,
+    required this.salePercent,
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class CartItemModel {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       inStock: (json['in_stock'] as num?)?.toInt() ?? 0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      salePercent: (json['sale_percent'] as num?)?.toInt() ?? 0,
     );
   }
 }

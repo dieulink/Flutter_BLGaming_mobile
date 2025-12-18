@@ -1,12 +1,10 @@
+import 'package:blgaming_app/models/response/promotion.dart';
+import 'package:blgaming_app/screens/order_screens/select_voucher_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:blgaming_app/models/request/order_detail_request.dart';
-import 'package:blgaming_app/models/request/order_request.dart';
 import 'package:blgaming_app/models/response/cart_item_model.dart';
-import 'package:blgaming_app/screens/home_screens/widgets/item_cart.dart';
 import 'package:blgaming_app/screens/order_screens/widgets/app_bar_order.dart';
 import 'package:blgaming_app/screens/order_screens/widgets/item_order.dart';
-import 'package:blgaming_app/services/order_service.dart';
 import 'package:blgaming_app/ui_value.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,9 +17,10 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
   String receiveName = "";
-  String receiveAddress = "";
   String receivePhone = "";
   late String userId;
+  Promotion? selectedVoucher;
+
   @override
   void initState() {
     super.initState();
@@ -29,19 +28,11 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Future<void> _loadUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      receiveName = prefs.getString('name') ?? 'Không lấy được name';
-      receivePhone = prefs.getString('phone') ?? 'Không lấy được sđt';
+      receiveName = prefs.getString('name') ?? '';
+      receivePhone = prefs.getString('phone') ?? '';
       userId = prefs.getString('userId') ?? '';
-    });
-  }
-
-  Future<void> _loadReceiveUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      receiveName = prefs.getString('receiveName') ?? "không có";
-      receivePhone = prefs.getString('receivePhone') ?? "không có";
     });
   }
 
@@ -51,65 +42,87 @@ class _OrderPageState extends State<OrderPage> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     if (args == null) {
-      return Scaffold(body: Center(child: Text("Không có dữ liệu")));
+      return const Scaffold(
+        body: Center(child: Text("Không có dữ liệu")),
+      );
     }
 
-    final List<CartItemModel> items = (args['items'] as List)
-        .map((e) => e as CartItemModel)
-        .toList();
-    final double totalPrice = args['totalPrice'];
+    final List<CartItemModel> items =
+        (args['items'] as List).cast<CartItemModel>();
+
     final int totalQuantity = args['totalQuantity'];
     final int isCart = args['isCart'];
+
+    double originTotal = 0;
+    double bigSaleDiscount = 0;
+
+    for (final item in items) {
+      final itemOriginTotal = item.price * item.quantity;
+      final itemBigSale = item.price * item.salePercent / 100 * item.quantity;
+
+      originTotal += itemOriginTotal;
+      bigSaleDiscount += itemBigSale;
+    }
+
+    final double priceAfterBigSale = originTotal - bigSaleDiscount;
+
+    final double voucherDiscount = (selectedVoucher != null &&
+            priceAfterBigSale >= selectedVoucher!.minOrderValue)
+        ? selectedVoucher!.value
+        : 0;
+
+    final double finalTotal = (priceAfterBigSale - voucherDiscount) > 0
+        ? (priceAfterBigSale - voucherDiscount)
+        : 0;
+
     return Scaffold(
       appBar: AppBarOrder(),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
                 color: mainColor2,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  ClipOval(
+                    child: Image.asset(
+                      'assets/imgs/user.png',
+                      height: 50,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset('assets/imgs/linhvat2.png', height: 50),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${receiveName}",
-                            style: TextStyle(
-                              color: white,
-                              fontFamily: "LD",
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "${receivePhone}",
-                            style: TextStyle(
-                              color: white,
-                              fontFamily: "LD",
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        receiveName,
+                        style: const TextStyle(
+                          color: white,
+                          fontFamily: "LD",
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        receivePhone,
+                        style: const TextStyle(
+                          color: white,
+                          fontFamily: "LD",
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
@@ -123,6 +136,7 @@ class _OrderPageState extends State<OrderPage> {
                     price: item.price,
                     quantity: item.quantity,
                     productId: item.gameId,
+                    salePercent: item.salePercent,
                   );
                 }).toList(),
               ),
@@ -147,13 +161,55 @@ class _OrderPageState extends State<OrderPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 5),
             Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
+              width: getWidth(context),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                color: mainColor2,
+              ),
+              child: InkWell(
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SelectVoucherPage(),
+                    ),
+                  );
+
+                  if (result != null && result is Promotion) {
+                    setState(() {
+                      selectedVoucher = result;
+                    });
+                  }
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      selectedVoucher?.name ?? "Chọn Mã giảm giá",
+                      style: const TextStyle(
+                        color: mainColor,
+                        fontSize: 13,
+                        fontFamily: "LD",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    const Icon(
+                      Icons.navigate_next_rounded,
+                      color: mainColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Container(
+              padding: const EdgeInsets.all(15),
               width: getWidth(context),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
@@ -162,7 +218,7 @@ class _OrderPageState extends State<OrderPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Chi tiết đơn hàng",
                     style: TextStyle(
                       color: white,
@@ -171,78 +227,18 @@ class _OrderPageState extends State<OrderPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tổng tiền hàng",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        "${NumberFormat("#,###", "vi_VN").format(totalPrice)}",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 10),
+                  _priceRow(
+                    "Tổng tiền hàng",
+                    originTotal,
                   ),
-                  SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tổng giảm giá ",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "0",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  _priceRow(
+                    "Giảm BigSale",
+                    -bigSaleDiscount,
                   ),
-                  SizedBox(height: 5),
-
-                  Container(height: 1, color: backgroudColor),
-                  SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Tổng thanh toán",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "${NumberFormat("#,###", "vi_VN").format(totalPrice)}",
-                        style: TextStyle(
-                          color: white,
-                          fontFamily: "LD",
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  _priceRow(
+                    "Giảm Voucher",
+                    -voucherDiscount,
                   ),
                 ],
               ),
@@ -263,8 +259,8 @@ class _OrderPageState extends State<OrderPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Tổng cộng",
+                const Text(
+                  "Tổng thanh toán",
                   style: TextStyle(
                     color: white,
                     fontFamily: "LD",
@@ -272,119 +268,64 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ),
                 Text(
-                  "${NumberFormat("#,###", "vi_VN").format(totalPrice + 30000)}",
-                  style: TextStyle(
+                  NumberFormat("#,###", "vi_VN").format(finalTotal),
+                  style: const TextStyle(
                     color: red,
                     fontFamily: "LD",
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Container(
               width: getWidth(context) * 0.3,
               height: 50,
-              margin: EdgeInsets.only(right: 20),
+              margin: const EdgeInsets.only(right: 20),
               child: ElevatedButton(
-                onPressed: () async {
-                  // final orderService = OrderService();
-
-                  // List<OrderDetailRequest> orderItems = items.map((item) {
-                  //   return OrderDetailRequest(
-                  //     productId: item.gameId,
-                  //     productPrice: item.price,
-                  //     quantity: item.quantity,
-                  //   );
-                  // }).toList();
-                  // final request = OrderRequest(
-                  //   userId: userId,
-                  //   quantity: totalQuantity,
-                  //   totalPrice: totalPrice,
-                  //   receiveAddress: receiveAddress,
-                  //   receiveName: receiveName,
-                  //   receivePhone: receivePhone,
-                  //   shipCost: 30000,
-                  //   isCart: isCart,
-                  //   payMethodId: 1,
-                  //   items: orderItems,
-                  // );
-                  // bool success = await orderService.createOrder(request);
-                  // if (success) {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       content: Row(
-                  //         children: [
-                  //           Icon(Icons.download_done_rounded, color: mainColor2),
-                  //           const SizedBox(width: 12),
-                  //           Expanded(
-                  //             child: Text(
-                  //               "Đặt hàng thành công",
-                  //               style: TextStyle(fontFamily: "LD"),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-
-                  //       backgroundColor: textColor1,
-                  //       behavior: SnackBarBehavior.floating,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //       margin: const EdgeInsets.all(30),
-                  //       duration: const Duration(seconds: 1),
-                  //       elevation: 8,
-                  //     ),
-                  //   );
-                  // } else {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       content: Row(
-                  //         children: [
-                  //           Icon(Icons.error_outline, color: mainColor2),
-                  //           const SizedBox(width: 12),
-                  //           Expanded(
-                  //             child: Text(
-                  //               "Đặt hàng thất bại",
-                  //               style: TextStyle(fontFamily: "LD"),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-
-                  //       backgroundColor: textColor1,
-                  //       behavior: SnackBarBehavior.floating,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //       margin: const EdgeInsets.all(30),
-                  //       duration: const Duration(seconds: 1),
-                  //       elevation: 8,
-                  //     ),
-                  //   );
-                  // }
-                  // Navigator.pushNamed(context, "home");
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: mainColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Đặt hàng",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: white,
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _priceRow(String title, double value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(color: white, fontSize: 12),
+          ),
+          Text(
+            "${value < 0 ? '-' : ''}${NumberFormat("#,###", "vi_VN").format(value.abs())}",
+            style: const TextStyle(
+              color: white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -73,54 +73,56 @@ class _RatingPageState extends State<RatingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       appBar: AppBarRating(name: "Tất cả đánh giá"),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _ratings.isEmpty
-          ? Center(
-              child: Text(
-                "Chưa có đánh giá nào.",
-                style: TextStyle(
-                  color: textColor1,
-                  fontFamily: "LD",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              ? Center(
+                  child: Text(
+                    "Chưa có đánh giá nào.",
+                    style: TextStyle(
+                      color: textColor1,
+                      fontFamily: "LD",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.all(10),
+                  itemCount: _ratings.length,
+                  itemBuilder: (context, index) {
+                    final rating = _ratings[index];
+                    return ItemRating(
+                      name: rating.userName,
+                      score: rating.score.toDouble(),
+                      time: DateFormat('dd/MM/yyyy').format(rating.createdAt),
+                      comment: rating.comment,
+                    );
+                  },
                 ),
-              ),
-            )
-          : ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: _ratings.length,
-              itemBuilder: (context, index) {
-                final rating = _ratings[index];
-                return ItemRating(
-                  name: rating.userName,
-                  score: rating.score.toDouble(),
-                  time: DateFormat('dd/MM/yyyy').format(rating.createdAt),
-                  comment: rating.comment,
-                );
-              },
-            ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroudColor,
           border: Border(top: BorderSide(color: borderColor)),
         ),
         child: Container(
           height: 50,
           width: getWidth(context) * 0.8,
           child: ElevatedButton(
-            onPressed: _hasPurchased
-                ? () {
-                    Navigator.pushNamed(
-                      context,
-                      "yourRatingPage",
-                      arguments: {'productId': _productId!},
-                    );
-                  }
-                : null,
+            onPressed:
+                // _hasPurchased
+                //     ?
+                () {
+              Navigator.pushNamed(
+                context,
+                "yourRatingPage",
+                arguments: {'productId': _productId!},
+              );
+            },
+            // : null,
+
             style: ElevatedButton.styleFrom(
               backgroundColor: mainColor,
               shape: RoundedRectangleBorder(
@@ -130,11 +132,10 @@ class _RatingPageState extends State<RatingPage> {
             child: Text(
               'Đánh giá của bạn',
               style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                fontFamily: "LD",
-                color: white,
-              ),
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "LD",
+                  color: white),
             ),
           ),
         ),

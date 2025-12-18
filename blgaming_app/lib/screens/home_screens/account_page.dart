@@ -13,11 +13,11 @@ class AccountPage extends StatelessWidget {
       final shouldLogout = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: white,
+          backgroundColor: mainColor,
           title: Text(
             'Xác nhận đăng xuất',
             style: TextStyle(
-              color: textColor1,
+              color: white,
               fontFamily: "LD",
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -42,7 +42,7 @@ class AccountPage extends StatelessWidget {
                   child: Text(
                     'Hủy',
                     style: TextStyle(
-                      color: textColor1,
+                      color: white,
                       fontFamily: "LD",
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class AccountPage extends StatelessWidget {
                   child: Text(
                     'Đăng xuất',
                     style: TextStyle(
-                      color: textColor1,
+                      color: white,
                       fontFamily: "LD",
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -78,15 +78,6 @@ class AccountPage extends StatelessWidget {
       //appBar: AppBarAccount(),
       body: Stack(
         children: [
-          // Container(
-          //   width: getWidth(context),
-          //   child: ClipRRect(
-          //     child: Image.asset(
-          //       "assets/imgs/background3.jpg",
-          //       fit: BoxFit.fitWidth,
-          //     ),
-          //   ),
-          // ),
           Container(
             width: getWidth(context),
             color: const Color.fromARGB(163, 0, 0, 0),
@@ -94,18 +85,7 @@ class AccountPage extends StatelessWidget {
           Column(
             children: [
               Container(
-                decoration: BoxDecoration(
-                  //borderRadius: BorderRadius.vertical(bottom: Radius.circular(50)),
-                  // gradient: LinearGradient(
-                  //   begin: Alignment.topCenter,
-                  //   end: Alignment.bottomCenter,
-                  //   colors: [
-                  //     mainColor,
-                  //     //const Color.fromARGB(120, 28, 56, 142),
-                  //     const Color.fromARGB(161, 28, 56, 142),
-                  //   ],
-                  // ),
-                ),
+                decoration: BoxDecoration(),
                 padding: EdgeInsets.only(top: 100, bottom: 50),
                 child: Row(
                   children: [
@@ -126,15 +106,12 @@ class AccountPage extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      mainColor2,
-                      //const Color.fromARGB(120, 28, 56, 142),
-                      mainColor,
-                    ],
-                  ),
+                  color: mainColor2,
+                  // gradient: LinearGradient(
+                  //   begin: Alignment.topLeft,
+                  //   end: Alignment.bottomRight,
+                  //   colors: [mainColor2, mainColor],
+                  // ),
                   border: Border.all(color: borderColor),
                 ),
                 margin: EdgeInsets.all(20),

@@ -20,6 +20,7 @@ class _CartPageState extends State<CartPage> {
   Set<int> selectedGameIds = {};
   double totalPrice = 0;
   int totalQuantity = 0;
+  double totalBigSaleDiscount = 0;
 
   @override
   void initState() {
@@ -51,16 +52,24 @@ class _CartPageState extends State<CartPage> {
         .where((item) => selectedGameIds.contains(item.gameId))
         .toList();
 
-    double total = 0;
+    double totalAfterSale = 0;
+    double totalDiscount = 0;
     int quantity = 0;
 
-    for (var item in selectedItems) {
-      total += item.price * item.quantity;
+    for (final item in selectedItems) {
+      final double originalPrice = item.price;
+      final double priceAfterSale =
+          originalPrice * (100 - item.salePercent) / 100;
+
+      totalAfterSale += priceAfterSale * item.quantity;
+      totalDiscount += (originalPrice - priceAfterSale) * item.quantity;
+
       quantity += item.quantity;
     }
 
     setState(() {
-      totalPrice = total;
+      totalPrice = totalAfterSale;
+      totalBigSaleDiscount = totalDiscount;
       totalQuantity = quantity;
     });
   }
@@ -125,6 +134,7 @@ class _CartPageState extends State<CartPage> {
                   price: item.price.toInt(),
                   quantity: item.quantity,
                   productId: item.gameId,
+                  salePercent: item.salePercent,
                   onDeleteSuccess: () async {
                     await loadCart();
                   },
@@ -147,78 +157,95 @@ class _CartPageState extends State<CartPage> {
           color: mainColor2,
           border: Border(top: BorderSide(color: borderColor)),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Column(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  "Tổng tạm tính",
-                  style: TextStyle(
-                    color: white,
-                    fontFamily: "LD",
-                    fontSize: 13,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Tổng tạm tính",
+                      style: TextStyle(
+                        color: white,
+                        fontFamily: "LD",
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'vi_VN',
+                        symbol: 'vn₫',
+                      ).format(totalPrice),
+                      style: TextStyle(
+                        color: red,
+                        fontFamily: "LD",
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (totalBigSaleDiscount > 0)
+                      Text(
+                        "-${NumberFormat.currency(
+                          locale: 'vi_VN',
+                          symbol: 'vn₫',
+                        ).format(totalBigSaleDiscount)}",
+                        style: TextStyle(
+                          color: textColor1,
+                          fontFamily: "LD",
+                          fontSize: 12,
+                        ),
+                      ),
+                  ],
                 ),
-                Text(
-                  NumberFormat.currency(
-                    locale: 'vi_VN',
-                    symbol: '₫',
-                  ).format(totalPrice),
-                  style: TextStyle(
-                    color: red,
-                    fontFamily: "LD",
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 10),
+                Container(
+                  width: getWidth(context) * 0.35,
+                  height: 50,
+                  margin: const EdgeInsets.only(right: 20),
+                  child: ElevatedButton(
+                    onPressed: selectedGameIds.isEmpty
+                        ? null
+                        : () {
+                            final selectedItems = cartResponse!.cartItems
+                                .where(
+                                  (item) =>
+                                      selectedGameIds.contains(item.gameId),
+                                )
+                                .toList();
+
+                            Navigator.pushNamed(
+                              context,
+                              "orderPage",
+                              arguments: {
+                                'items': selectedItems,
+                                'totalPrice': totalPrice,
+                                'totalQuantity': totalQuantity,
+                                'isCart': 1,
+                              },
+                            );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Đặt mua ($totalQuantity)",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "LD",
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(width: 10),
-            Container(
-              width: getWidth(context) * 0.35,
-              height: 50,
-              margin: const EdgeInsets.only(right: 20),
-              child: ElevatedButton(
-                onPressed: selectedGameIds.isEmpty
-                    ? null
-                    : () {
-                        final selectedItems = cartResponse!.cartItems
-                            .where(
-                              (item) => selectedGameIds.contains(item.gameId),
-                            )
-                            .toList();
-
-                        Navigator.pushNamed(
-                          context,
-                          "orderPage",
-                          arguments: {
-                            'items': selectedItems,
-                            'totalPrice': totalPrice,
-                            'totalQuantity': totalQuantity,
-                            'isCart': 1,
-                          },
-                        );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  "Đặt mua ($totalQuantity)",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "LD",
-                    fontWeight: FontWeight.bold,
-                    color: white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             ),
           ],
         ),

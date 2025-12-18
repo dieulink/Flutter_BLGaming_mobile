@@ -117,8 +117,13 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset("assets/imgs/background5.png"),
-          Container(color: const Color.fromARGB(113, 0, 0, 14)),
+          Positioned.fill(
+            child: Image.asset(
+              "assets/imgs/background7.jpg",
+              fit: BoxFit.cover,
+            ),
+          ),
+          Container(color: const Color.fromARGB(74, 0, 0, 0)),
           Container(
             height: getHeight(context),
             padding: EdgeInsets.all(20),
@@ -141,16 +146,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    alignment: Alignment.bottomRight,
-                    child: Image.asset("assets/imgs/pacman4.gif", height: 25),
-                  ),
+                  // Container(
+                  //   alignment: Alignment.bottomRight,
+                  //   child: Image.asset("assets/imgs/pacman4.gif", height: 25),
+                  // ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                     decoration: BoxDecoration(
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(201, 0, 0, 14),
+                      color: const Color.fromARGB(218, 0, 0, 0),
                     ),
                     child: Column(
                       children: [

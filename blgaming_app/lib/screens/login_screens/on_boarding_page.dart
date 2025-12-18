@@ -21,12 +21,17 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset("assets/imgs/background5.png"),
-        Container(color: const Color.fromARGB(131, 0, 0, 14)),
+        Positioned.fill(
+          child: Image.asset("assets/imgs/background7.jpg", fit: BoxFit.cover),
+        ),
+        Container(color: const Color.fromARGB(74, 0, 0, 0)),
         Container(
           // color: mainColor,
           child: Center(
-            child: Image.asset('assets/imgs/logo_blue.png', height: 200),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 400),
+              child: Image.asset('assets/imgs/logo_blue.png', height: 200),
+            ),
           ),
         ),
       ],

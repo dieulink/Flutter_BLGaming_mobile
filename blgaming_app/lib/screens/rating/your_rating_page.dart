@@ -48,95 +48,95 @@ class _YourRatingPageState extends State<YourRatingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       appBar: AppBarRating(name: "Đánh giá của bạn"),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _ratings.isEmpty
-          ? Center(
-              child: Text(
-                "Chưa có đánh giá nào.",
-                style: TextStyle(
-                  color: textColor1,
-                  fontFamily: "LD",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            )
-          : ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: _ratings.length,
-              itemBuilder: (context, index) {
-                final rating = _ratings[index];
-                return ItemRatingDelete(
-                  name: rating.userName,
-                  score: rating.score.toDouble(),
-                  time: DateFormat('dd/MM/yyyy').format(rating.createdAt),
-                  comment: rating.comment,
-                  ratingId: rating.id,
-                  onDelete: () async {
-                    try {
-                      await RatingService.deleteRating(rating.id);
-                      await fetchRatings(_productId!);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(Icons.download_done_rounded, color: white),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  "Đã xóa đánh giá",
-                                  style: TextStyle(fontFamily: "LD"),
-                                ),
+              ? Center(
+                  child: Text(
+                    "Chưa có đánh giá nào.",
+                    style: TextStyle(
+                      color: textColor1,
+                      fontFamily: "LD",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.all(10),
+                  itemCount: _ratings.length,
+                  itemBuilder: (context, index) {
+                    final rating = _ratings[index];
+                    return ItemRatingDelete(
+                      name: rating.userName,
+                      score: rating.score.toDouble(),
+                      time: DateFormat('dd/MM/yyyy').format(rating.createdAt),
+                      comment: rating.comment,
+                      ratingId: rating.id,
+                      onDelete: () async {
+                        try {
+                          await RatingService.deleteRating(rating.id);
+                          await fetchRatings(_productId!);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(Icons.download_done_rounded,
+                                      color: white),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      "Đã xóa đánh giá",
+                                      style: TextStyle(fontFamily: "LD"),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          backgroundColor: textColor1,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.all(20),
-                          duration: const Duration(seconds: 1),
-                          elevation: 8,
-                        ),
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(Icons.error_outline, color: white),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  "Xóa thất bại",
-                                  style: TextStyle(fontFamily: "LD"),
-                                ),
+                              backgroundColor: textColor1,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            ],
-                          ),
-                          backgroundColor: textColor1,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.all(20),
-                          duration: const Duration(seconds: 1),
-                          elevation: 8,
-                        ),
-                      );
-                    }
+                              margin: const EdgeInsets.all(20),
+                              duration: const Duration(seconds: 1),
+                              elevation: 8,
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(Icons.error_outline, color: white),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      "Xóa thất bại",
+                                      style: TextStyle(fontFamily: "LD"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: textColor1,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              margin: const EdgeInsets.all(20),
+                              duration: const Duration(seconds: 1),
+                              elevation: 8,
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
-                );
-              },
-            ),
+                ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           border: Border(top: BorderSide(color: borderColor)),
         ),
         child: Container(

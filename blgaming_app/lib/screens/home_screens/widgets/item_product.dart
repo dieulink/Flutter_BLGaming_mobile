@@ -17,17 +17,27 @@ class ItemProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.of(context).push(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                ProductDetail(id: product.id),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-          ),
+      onTap: () async {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) =>
+              const Center(child: CircularProgressIndicator(color: mainColor)),
         );
+        await Future.delayed(const Duration(milliseconds: 2000));
+        Navigator.pop(context);
+        if (context.mounted) {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  ProductDetail(id: product.id),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            ),
+          );
+        }
       },
 
       child: Container(
@@ -52,7 +62,7 @@ class ItemProduct extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        'assets/imgs/default.png',
+                        'assets/imgs/default.jpg',
                         height: 150,
                         width: getWidth(context),
                         fit: BoxFit.cover,
@@ -166,23 +176,6 @@ class ItemProduct extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Container(
-                          //   decoration: BoxDecoration(
-                          //     color: red,
-                          //     borderRadius: BorderRadius.circular(3),
-                          //   ),
-                          //   margin: const EdgeInsets.symmetric(horizontal: 10),
-                          //   padding: const EdgeInsets.symmetric(horizontal: 5),
-                          //   alignment: Alignment.centerLeft,
-                          //   child: Text(
-                          //     " - ${product.salePercent} %",
-                          //     style: const TextStyle(
-                          //       fontFamily: "LD",
-                          //       color: white,
-                          //       fontSize: 12,
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ],

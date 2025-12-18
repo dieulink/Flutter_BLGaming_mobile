@@ -18,18 +18,20 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollCtrl = ScrollController();
 
-  bool _isTyping = false; // AI đang gõ
-  bool _isUserTyping = false; // User đang gõ → đổi border
+  bool _isTyping = false;
+  bool _isUserTyping = false;
 
-  /// Thêm tin nhắn vào list
-  void _addMessage(String text, bool isUser) {
+  void _addMessage(String text, bool isUser, {bool isTypewriter = false}) {
     setState(() {
-      _messages.add(_ChatMessage(text: text, isUser: isUser));
+      _messages.add(_ChatMessage(
+        text: text,
+        isUser: isUser,
+        isTypewriterEffect: isTypewriter, // truyền trạng thái vào
+      ));
     });
     _scrollToBottom();
   }
 
-  /// Xử lý gửi tin nhắn
   Future<void> _handleSend() async {
     final msg = _controller.text.trim();
     if (msg.isEmpty) return;
@@ -45,18 +47,19 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final reply = await _chatService.sendMessage(msg);
 
-      /// Parse JSON { "result": "..." }
+      String content;
       if (reply.trim().startsWith("{")) {
         try {
           final jsonData = jsonDecode(reply);
-          final content = jsonData["result"] ?? reply;
-          _addMessage(content, false);
+          content = jsonData["result"] ?? reply;
         } catch (_) {
-          _addMessage(reply, false);
+          content = reply;
         }
       } else {
-        _addMessage(reply, false);
+        content = reply;
       }
+
+      _addMessage(content, false, isTypewriter: true);
     } catch (e) {
       _addMessage("⚠ Lỗi API: $e", false);
     }
@@ -64,7 +67,6 @@ class _ChatPageState extends State<ChatPage> {
     setState(() => _isTyping = false);
   }
 
-  /// Auto scroll xuống cuối danh sách tin nhắn
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 200), () {
       if (_scrollCtrl.hasClients) {
@@ -92,9 +94,8 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (context, index) {
                 final msg = _messages[index];
                 return Align(
-                  alignment: msg.isUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment:
+                      msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -112,7 +113,6 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ),
                         ),
-
                       Flexible(
                         child: Container(
                           width: getWidth(context) * 0.7,
@@ -120,14 +120,16 @@ class _ChatPageState extends State<ChatPage> {
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           decoration: BoxDecoration(
                             color: msg.isUser
-                                ? mainColor
+                                ? mainColor2
                                 : const Color.fromARGB(255, 48, 48, 48),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
-                            msg.text,
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          child: msg.isTypewriterEffect
+                              ? TypewriterText(text: msg.text)
+                              : Text(
+                                  msg.text,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                         ),
                       ),
                     ],
@@ -136,10 +138,8 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
           ),
-
           if (_isTyping)
             const Padding(padding: EdgeInsets.all(8), child: TypingIndicator()),
-
           _buildInputBar(),
         ],
       ),
@@ -163,7 +163,6 @@ class _ChatPageState extends State<ChatPage> {
                 decoration: InputDecoration(
                   hintText: "Nhập tin nhắn...",
                   hintStyle: const TextStyle(color: Colors.white54),
-
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: _isUserTyping ? mainColor : Colors.grey.shade700,
@@ -175,13 +174,11 @@ class _ChatPageState extends State<ChatPage> {
                     borderSide: BorderSide(color: mainColor, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-
                   filled: true,
                   fillColor: Colors.grey.shade900,
                 ),
               ),
             ),
-
             IconButton(
               onPressed: _handleSend,
               icon: const Icon(Icons.send, color: Colors.white),
@@ -196,8 +193,12 @@ class _ChatPageState extends State<ChatPage> {
 class _ChatMessage {
   final String text;
   final bool isUser;
+  final bool isTypewriterEffect;
 
-  _ChatMessage({required this.text, required this.isUser});
+  _ChatMessage(
+      {required this.text,
+      required this.isUser,
+      this.isTypewriterEffect = false});
 }
 
 class TypingIndicator extends StatefulWidget {
@@ -233,14 +234,6 @@ class _TypingIndicatorState extends State<TypingIndicator>
       builder: (_, __) {
         int dot = ((_controller.value * 3) % 3).floor();
         return Container(
-          // // color: const Color.fromARGB(255, 48, 48, 48),
-          // alignment: Alignment.centerLeft,
-          // width: 55,
-          // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          // decoration: BoxDecoration(
-          //   color: const Color.fromARGB(255, 48, 48, 48),
-          //   borderRadius: BorderRadius.circular(20),
-          // ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: List.generate(3, (i) {
@@ -250,7 +243,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                   padding: EdgeInsets.symmetric(horizontal: 2),
                   child: Text(
                     "●",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
+                    style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
               );
@@ -258,6 +251,60 @@ class _TypingIndicatorState extends State<TypingIndicator>
           ),
         );
       },
+    );
+  }
+}
+
+class TypewriterText extends StatefulWidget {
+  final String text;
+
+  const TypewriterText({super.key, required this.text});
+
+  @override
+  State<TypewriterText> createState() => _TypewriterTextState();
+}
+
+class _TypewriterTextState extends State<TypewriterText> {
+  String _displayedText = "";
+  int _currentIndex = 0;
+
+  static const Duration _typingSpeed = Duration(milliseconds: 20);
+
+  @override
+  void initState() {
+    super.initState();
+    _startTypingAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant TypewriterText oldWidget) {
+    if (oldWidget.text != widget.text) {
+      _displayedText = "";
+      _currentIndex = 0;
+      _startTypingAnimation();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _startTypingAnimation() async {
+    for (int i = 0; i < widget.text.length; i++) {
+      await Future.delayed(_typingSpeed);
+      if (mounted) {
+        setState(() {
+          _displayedText = widget.text.substring(0, i + 1);
+          _currentIndex = i + 1;
+        });
+      } else {
+        break;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _displayedText,
+      style: const TextStyle(color: Colors.white),
     );
   }
 }

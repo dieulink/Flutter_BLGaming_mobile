@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:blgaming_app/screens/home_screens/category_item_page.dart';
 import 'package:blgaming_app/screens/home_screens/category_page.dart';
 import 'package:blgaming_app/ui_value.dart';
 
@@ -87,3 +86,6 @@ class AppBarCate extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+@override
+Size get preferredSize => const Size.fromHeight(kToolbarHeight);

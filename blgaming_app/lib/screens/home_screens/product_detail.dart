@@ -83,13 +83,31 @@ class _ProductDetailState extends State<ProductDetail> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "${NumberFormat("#,###", "vi_VN").format(_item!.price)} vnđ",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: red,
-                            fontSize: 18,
-                          ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${NumberFormat("#,###", "vi_VN").format(_item!.price - _item!.price * (_item!.salePercent / 100))} vnđ",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: red,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              "${NumberFormat("#,###", "vi_VN").format(_item!.price)} vnđ",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: textColor2,
+                                fontSize: 13,
+                                fontFamily: "LD",
+                                decoration: TextDecoration.lineThrough,
+                                decorationThickness: 1,
+                                decorationColor: textColor1,
+                              ),
+                            ),
+                          ],
                         ),
                         Text(
                           "Số lượng còn: ${_item!.stock}",
@@ -101,6 +119,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                       ],
                     ),
+
                     Container(height: 2, color: backgroudColor),
 
                     const SizedBox(height: 10),
@@ -346,8 +365,8 @@ class _ProductDetailState extends State<ProductDetail> {
                           quantity: 1,
                           imageUrl: _item!.imageUrl,
                           inStock: _item!.stock,
+                          salePercent: _item!.salePercent,
                         );
-
                         Navigator.pushNamed(
                           context,
                           "orderPage",

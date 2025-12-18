@@ -9,7 +9,6 @@ import 'package:blgaming_app/screens/account_screens/list_order/shipping_page.da
 import 'package:blgaming_app/screens/account_screens/profile/edit_name_page.dart';
 import 'package:blgaming_app/screens/account_screens/profile/profile_page.dart';
 import 'package:blgaming_app/screens/home_screens/cart_page.dart';
-import 'package:blgaming_app/screens/home_screens/category_item_page.dart';
 import 'package:blgaming_app/screens/home_screens/home.dart';
 import 'package:blgaming_app/screens/home_screens/home_page.dart';
 import 'package:blgaming_app/screens/home_screens/product_detail.dart';
@@ -58,11 +57,8 @@ class MyApp extends StatelessWidget {
         "processingPage": (context) => ProcessingPage(),
         "ratingPage": (context) => RatingPage(),
         "yourRatingPage": (context) => YourRatingPage(),
-        // "editEmailPage": (context) => EditEmailPage(),
-        // "editPhonePage": (context) => EditPhonePage(),
         "writeRatingPage": (context) => WriteRatingPage(),
         "orderDetailPage": (context) => DetailOrdered(),
-        // "adminPage": (context) => HomeAdmin(),
       },
     );
   }

@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Stack(
         children: [
           Container(
-            height: 150,
+            height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
               color: mainColor,
@@ -56,9 +56,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   child: ClipRRect(
                     borderRadius: BorderRadiusGeometry.circular(100),
-                    child: Image.asset("assets/imgs/linhvat2.png", height: 180),
+                    child: Image.asset("assets/imgs/user.png", height: 100),
                   ),
                 ),
+                SizedBox(height: 30),
                 TagProfile(
                   name: "Tên người dùng",
                   value: name,

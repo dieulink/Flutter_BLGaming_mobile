@@ -12,7 +12,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:blgaming_app/models/response/product.dart';
 import 'package:blgaming_app/models/response/product_category.dart';
 import 'package:blgaming_app/screens/home_screens/cart_page.dart';
-import 'package:blgaming_app/screens/home_screens/category_item_page.dart';
 import 'package:blgaming_app/screens/home_screens/widgets/item_product.dart';
 import 'package:blgaming_app/screens/home_screens/widgets/search_input.dart';
 import 'package:blgaming_app/services/category_service.dart';
@@ -118,424 +117,407 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: SafeArea(
-          child: Container(
-            color: mainColor,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: SearchInput(
-                        hintText: "Bạn muốn tìm gì ?",
-                        iconPath: "assets/icons/system_icon/24px/Search.png",
-                      ),
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          color: mainColor,
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+            top: 20,
+            bottom: 5,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: SearchInput(
+                      hintText: "Bạn muốn tìm gì ?",
+                      iconPath: "assets/icons/system_icon/24px/Search.png",
                     ),
+                  ),
 
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    CartPage(),
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
-                          ),
-                        );
-                      },
-                      child: Image.asset(
-                        "assets/icons/system_icon/24px/Cart.png",
-                        height: 50,
-                        color: backgroudColor,
-                      ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  CartPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      "assets/icons/system_icon/24px/Cart.png",
+                      height: 40,
+                      color: backgroudColor,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
 
-      body: SafeArea(
-        child: Container(
-          // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: CarouselSlider.builder(
-                            itemCount: _bestSaleProducts.length,
-                            itemBuilder: (context, index, realIndex) {
-                              final product = _bestSaleProducts[index];
-                              if (product.imageUrl != null &&
-                                  !product.imageUrl.trim().isEmpty) {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 10,
+      body: Container(
+        // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: CarouselSlider.builder(
+                          itemCount: _bestSaleProducts.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final product = _bestSaleProducts[index];
+                            if (product.imageUrl != null &&
+                                !product.imageUrl.trim().isEmpty) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                width: getWidth(context) - 20,
+                                height: 170,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Colors.grey[200],
+                                  image: DecorationImage(
+                                    image: NetworkImage(product.imageUrl),
+                                    fit: BoxFit.fitWidth,
                                   ),
-                                  width: getWidth(context) - 20,
-                                  height: 170,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: Colors.grey[200],
-                                    image: DecorationImage(
-                                      image: NetworkImage(product.imageUrl),
-                                      fit: BoxFit.fitWidth,
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                width: getWidth(context) - 20,
+                                height: 170,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Colors.grey[200],
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/imgs/default.jpg',
                                     ),
+                                    fit: BoxFit.fitWidth,
                                   ),
-                                );
-                              } else {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  width: getWidth(context) - 20,
-                                  height: 170,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: Colors.grey[200],
-                                    image: const DecorationImage(
-                                      image: AssetImage(
-                                        'assets/imgs/default.png',
-                                      ),
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            options: CarouselOptions(
-                              height: 170,
-                              autoPlay: true,
-                              autoPlayInterval: const Duration(seconds: 3),
-                              autoPlayAnimationDuration: const Duration(
-                                milliseconds: 800,
-                              ),
-                              enlargeCenterPage: true,
-                              viewportFraction: 1,
+                                ),
+                              );
+                            }
+                          },
+                          options: CarouselOptions(
+                            height: 170,
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 3),
+                            autoPlayAnimationDuration: const Duration(
+                              milliseconds: 800,
                             ),
+                            enlargeCenterPage: true,
+                            viewportFraction: 1,
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 2,
-                          ),
-                          width: getWidth(context),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(0),
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: _categories.map((Category) {
-                                return Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  height: 105,
-                                  width: 85,
-                                  child: Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            PageRouteBuilder(
-                                              pageBuilder:
-                                                  (
-                                                    context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                  ) => CategoryPage(
-                                                    id: Category.id,
-                                                    name: Category.name,
-                                                  ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          height: 50,
-                                          width: 70,
-                                          decoration: BoxDecoration(
-                                            color: backgroudColor,
-                                            border: Border.all(
-                                              color: backgroudColor,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadiusGeometry.circular(
-                                                  10,
-                                                ),
-                                            child: ClipRRect(
-                                              child: Image.network(
-                                                Category.imageUrl,
-                                                fit: BoxFit.fill,
-                                                errorBuilder:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) {
-                                                      return Image.asset(
-                                                        'assets/imgs/default.png',
-                                                        fit: BoxFit.fill,
-                                                      );
-                                                    },
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        Category.name,
-                                        style: TextStyle(
-                                          color: white,
-                                          fontFamily: "LD",
-                                          //fontWeight: FontWeight.bold,
-                                          fontSize: 11,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.clip,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 2,
                         ),
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          height: 240,
-                          width: getWidth(context),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [mainColor, mainColor3],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/imgs/hot.gif",
-                                    height: 40,
-                                  ),
-                                  Text(
-                                    'Hot Sale !!!',
-                                    style: TextStyle(
-                                      color: white,
-                                      fontSize: 13,
-                                      fontFamily: "LD",
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 20),
-
-                                  const DailyCountdown(),
-                                  Spacer(),
-                                  Icon(
-                                    Icons.navigate_next_rounded,
-                                    color: white,
-                                  ),
-                                ],
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
+                        width: getWidth(context),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _categories.map((Category) {
+                              return Container(
+                                padding: const EdgeInsets.all(8.0),
+                                height: 105,
+                                width: 85,
+                                child: Column(
                                   children: [
-                                    for (final item in _bigSaleItems)
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            PageRouteBuilder(
-                                              pageBuilder:
-                                                  (
-                                                    context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                  ) => ProductDetail(
-                                                    id: item.gameId,
-                                                  ),
-                                              transitionsBuilder:
-                                                  (
-                                                    context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                    child,
-                                                  ) {
-                                                    return FadeTransition(
-                                                      opacity: animation,
-                                                      child: child,
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            pageBuilder:
+                                                (
+                                                  context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                ) => CategoryPage(
+                                                  id: Category.id,
+                                                  name: Category.name,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        width: 70,
+                                        decoration: BoxDecoration(
+                                          color: backgroudColor,
+                                          border: Border.all(
+                                            color: backgroudColor,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(10),
+                                          child: ClipRRect(
+                                            child: Image.network(
+                                              Category.imageUrl,
+                                              fit: BoxFit.fill,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                    return Image.asset(
+                                                      'assets/imgs/default.jpg',
+                                                      fit: BoxFit.fill,
                                                     );
                                                   },
                                             ),
-                                          );
-                                        },
-                                        child: Container(
-                                          width: 120,
-                                          height: 180,
-                                          margin: EdgeInsets.only(right: 5),
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              5,
-                                            ),
-                                            color: itemColor,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                child: Image.network(
-                                                  item.imageUrl,
-                                                  fit: BoxFit.fill,
-                                                  height: 90,
-                                                  width: 120,
-                                                  errorBuilder: (c, e, s) =>
-                                                      Image.asset(
-                                                        "assets/imgs/default.png",
-                                                        height: 90,
-                                                        width: 120,
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Text(
-                                                item.gameName,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  color: white,
-                                                  fontSize: 10,
-                                                  fontFamily: "LD",
-                                                ),
-                                              ),
-                                              //SizedBox(height: 5),
-                                              Spacer(),
-                                              Text(
-                                                "${NumberFormat("#,###", "vi_VN").format(item.salePrice)} vnđ",
-                                                style: TextStyle(
-                                                  color: red,
-                                                  fontSize: 12,
-                                                  fontFamily: "LD",
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "${item.originalPrice.toStringAsFixed(0)}đ",
-                                                    style: TextStyle(
-                                                      color: textColor1,
-
-                                                      fontSize: 10,
-                                                      fontFamily: "LD",
-                                                      decoration: TextDecoration
-                                                          .lineThrough,
-                                                      decorationThickness: 1.5,
-                                                      decorationColor:
-                                                          textColor1,
-                                                    ),
-                                                  ),
-                                                  Spacer(),
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            2,
-                                                          ),
-                                                      color: white,
-                                                    ),
-                                                    padding: EdgeInsets.all(2),
-                                                    child: Text(
-                                                      "-${item.discountPercent}%",
-                                                      style: TextStyle(
-                                                        color: red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 10,
-                                                        fontFamily: "LD",
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
                                           ),
                                         ),
                                       ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      Category.name,
+                                      style: TextStyle(
+                                        color: white,
+                                        fontFamily: "LD",
+                                        //fontWeight: FontWeight.bold,
+                                        fontSize: 11,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.clip,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ],
+                              );
+                            }).toList(),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 10),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                  child: MasonryGridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: _products.length + (_isLoading ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index < _products.length) {
-                        return ItemProduct(product: _products[index]);
-                      } else {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: CircularProgressIndicator(),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        height: 240,
+                        width: getWidth(context),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [mainColor, mainColor3],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomRight,
                           ),
-                        );
-                      }
-                    },
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset("assets/imgs/hot.gif", height: 40),
+                                Text(
+                                  'Hot Sale !!!',
+                                  style: TextStyle(
+                                    color: white,
+                                    fontSize: 13,
+                                    fontFamily: "LD",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+
+                                const DailyCountdown(),
+                                Spacer(),
+                                Icon(Icons.navigate_next_rounded, color: white),
+                              ],
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  for (final item in _bigSaleItems)
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            pageBuilder:
+                                                (
+                                                  context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                ) => ProductDetail(
+                                                  id: item.gameId,
+                                                ),
+                                            transitionsBuilder:
+                                                (
+                                                  context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                  child,
+                                                ) {
+                                                  return FadeTransition(
+                                                    opacity: animation,
+                                                    child: child,
+                                                  );
+                                                },
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 120,
+                                        height: 180,
+                                        margin: EdgeInsets.only(right: 5),
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            5,
+                                          ),
+                                          color: itemColor,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: Image.network(
+                                                item.imageUrl,
+                                                fit: BoxFit.fill,
+                                                height: 90,
+                                                width: 120,
+                                                errorBuilder: (c, e, s) =>
+                                                    Image.asset(
+                                                      "assets/imgs/default.jpg",
+                                                      height: 90,
+                                                      width: 120,
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              item.gameName,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: white,
+                                                fontSize: 10,
+                                                fontFamily: "LD",
+                                              ),
+                                            ),
+                                            //SizedBox(height: 5),
+                                            Spacer(),
+                                            Text(
+                                              "${NumberFormat("#,###", "vi_VN").format(item.salePrice)} vnđ",
+                                              style: TextStyle(
+                                                color: red,
+                                                fontSize: 12,
+                                                fontFamily: "LD",
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "${item.originalPrice.toStringAsFixed(0)}đ",
+                                                  style: TextStyle(
+                                                    color: textColor1,
+
+                                                    fontSize: 10,
+                                                    fontFamily: "LD",
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                    decorationThickness: 1.5,
+                                                    decorationColor: textColor1,
+                                                  ),
+                                                ),
+                                                Spacer(),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          2,
+                                                        ),
+                                                    color: white,
+                                                  ),
+                                                  padding: EdgeInsets.all(2),
+                                                  child: Text(
+                                                    "-${item.discountPercent}%",
+                                                    style: TextStyle(
+                                                      color: red,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 10,
+                                                      fontFamily: "LD",
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                ],
+              ),
+
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                child: MasonryGridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _products.length + (_isLoading ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < _products.length) {
+                      return ItemProduct(product: _products[index]);
+                    } else {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

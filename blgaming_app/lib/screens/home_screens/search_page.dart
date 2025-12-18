@@ -44,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
     final categories = await CategoryService.fetchCategories();
     if (categories.isNotEmpty) {
       setState(() => _categories = categories);
-      await _loadProducts(); // Load danh mục đầu tiên
+      await _loadProducts();
     }
   }
 
@@ -92,37 +92,40 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 29, 29, 29),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: SafeArea(
-          child: Container(
-            color: mainColor,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: SearchInput(
-                        hintText: "Bạn muốn tìm gì ?",
-                        iconPath: "assets/icons/system_icon/24px/Search.png",
-                      ),
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          color: mainColor,
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+            top: 20,
+            bottom: 5,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: SearchInput(
+                      hintText: "Bạn muốn tìm gì ?",
+                      iconPath: "assets/icons/system_icon/24px/Search.png",
                     ),
-                    SizedBox(width: 10),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, "cartPage");
-                      },
-                      child: Image.asset(
-                        "assets/icons/system_icon/24px/Cart.png",
-                        height: 50,
-                        color: backgroudColor,
-                      ),
+                  ),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, "cartPage");
+                    },
+                    child: Image.asset(
+                      "assets/icons/system_icon/24px/Cart.png",
+                      height: 40,
+                      color: backgroudColor,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -174,9 +177,9 @@ class _SearchPageState extends State<SearchPage> {
                             width: 80,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Image.asset(
-                              'assets/imgs/default.png',
-                              height: 40,
-                              width: 40,
+                              'assets/imgs/default.jpg',
+                              height: 50,
+                              width: 80,
                             ),
                           ),
                         ),
