@@ -36,7 +36,7 @@ class ItemRatingDelete extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.asset("assets/imgs/logo_blue.png", height: 20),
+                    child: Image.asset("assets/imgs/user.png", height: 30),
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -45,7 +45,7 @@ class ItemRatingDelete extends StatelessWidget {
                       fontSize: 13,
                       fontFamily: "LD",
                       fontWeight: FontWeight.bold,
-                      color: textColor3,
+                      color: white,
                     ),
                   ),
                 ],
@@ -55,7 +55,7 @@ class ItemRatingDelete extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: "LD",
-                  color: textColor3,
+                  color: white,
                 ),
               ),
             ],
@@ -79,7 +79,7 @@ class ItemRatingDelete extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontFamily: "LD",
-                    color: textColor2,
+                    color: white,
                   ),
                   textAlign: TextAlign.justify,
                 ),

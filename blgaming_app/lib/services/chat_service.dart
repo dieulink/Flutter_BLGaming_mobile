@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatService {
-  final String baseUrl = "http://192.168.5.138:8080/api/ai/chat";
+  final String baseUrl = "http://192.168.5.139:8080/api/ai/chat";
 
   Future<String?> _getUserId() async {
     final prefs = await SharedPreferences.getInstance();

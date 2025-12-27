@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class UserService {
   static Future<EditUserResponse?> editUser(EditUserRequest request) async {
-    final url = Uri.parse('http://192.168.5.138:8080/user/updateInformation');
+    final url = Uri.parse('http://192.168.5.139:8080/user/updateInformation');
 
     try {
       final prefs = await SharedPreferences.getInstance();

@@ -16,7 +16,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetail extends StatefulWidget {
   final int id;
-
   const ProductDetail({super.key, required this.id});
 
   @override
@@ -26,22 +25,26 @@ class ProductDetail extends StatefulWidget {
 class _ProductDetailState extends State<ProductDetail> {
   Item? _item;
   List<RatingResponse> _ratings = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadProductItem(widget.id);
-    _loadRatings(widget.id);
+    _loadData();
   }
 
-  Future<void> _loadRatings(int id) async {
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+
     try {
-      final ratings = await RatingService.fetchRatings(id);
-      setState(() {
-        _ratings = ratings;
-      });
-    } catch (e) {
-      print("Lỗi khi load ratings: $e");
+      await Future.wait([
+        _loadProductItem(widget.id),
+        _loadRatings(widget.id),
+      ]);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -52,203 +55,206 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Future<void> _loadProductItem(int id) async {
-    try {
-      final item = await ProductService.fetchProductItem(id);
-      setState(() {
-        _item = item;
-      });
-    } catch (e) {
-      print("Lỗi khi load sản phẩm: $e");
-    }
+    final item = await ProductService.fetchProductItem(id);
+    if (!mounted) return;
+    setState(() => _item = item);
+  }
+
+  Future<void> _loadRatings(int id) async {
+    final ratings = await RatingService.fetchRatings(id);
+    if (!mounted) return;
+    setState(() => _ratings = ratings);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarCustom(),
-      body: _item == null
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Container(
-              padding: const EdgeInsets.all(10.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ProductImageSlider(
-                      mainImage: _item!.imageUrl,
-                      descImages: _item!.descImages,
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Giá & tồn kho
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          : _item == null
+              ? const Center(child: Text("Không tìm thấy sản phẩm"))
+              : Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        ProductImageSlider(
+                          mainImage: _item!.imageUrl,
+                          descImages: _item!.descImages,
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Giá & tồn kho
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "${NumberFormat("#,###", "vi_VN").format(_item!.price - _item!.price * (_item!.salePercent / 100))} vnđ",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: red,
-                                fontSize: 15,
-                              ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${NumberFormat("#,###", "vi_VN").format(_item!.price - _item!.price * (_item!.salePercent / 100))} vnđ",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: red,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                Text(
+                                  "${NumberFormat("#,###", "vi_VN").format(_item!.price)} vnđ",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor2,
+                                    fontSize: 13,
+                                    fontFamily: "LD",
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationThickness: 1,
+                                    decorationColor: textColor1,
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
-                              "${NumberFormat("#,###", "vi_VN").format(_item!.price)} vnđ",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: textColor2,
+                              "Số lượng còn: ${_item!.stock}",
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontFamily: "LD",
-                                decoration: TextDecoration.lineThrough,
-                                decorationThickness: 1,
-                                decorationColor: textColor1,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "Số lượng còn: ${_item!.stock}",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: "LD",
-                            color: mainColor,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Container(height: 2, color: backgroudColor),
-
-                    const SizedBox(height: 10),
-
-                    // Tên sản phẩm
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(22, 255, 255, 255),
-                      ),
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              _item!.name,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "LD",
-                                fontWeight: FontWeight.bold,
                                 color: mainColor,
                               ),
                             ),
-                          ),
-                          // Mô tả
-                          Text(
-                            _item!.description,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: "LD",
-                              color: white,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(height: 2, color: backgroudColor),
-                    const SizedBox(height: 5),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "${getAverageRating().toStringAsFixed(1)}",
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: "LD",
-                                fontWeight: FontWeight.bold,
-                                color: white,
-                              ),
-                            ),
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Đánh giá (${_ratings.length})",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "LD",
-                                fontWeight: FontWeight.bold,
-                                color: white,
-                              ),
-                            ),
                           ],
                         ),
-                        InkWell(
-                          onTap: () async {
-                            await Navigator.pushNamed(
-                              context,
-                              "ratingPage",
-                              arguments: {'productId': _item!.id},
-                            ).then((_) => _loadRatings(widget.id));
-                          },
-                          child: Row(
-                            children: const [
-                              Text(
-                                "Tất cả đánh giá",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: "LD",
-                                  fontWeight: FontWeight.bold,
-                                  color: mainColor,
+
+                        Container(height: 2, color: backgroudColor),
+
+                        const SizedBox(height: 10),
+
+                        // Tên sản phẩm
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color.fromARGB(22, 255, 255, 255),
+                          ),
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _item!.name,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: "LD",
+                                    fontWeight: FontWeight.bold,
+                                    color: mainColor,
+                                  ),
                                 ),
                               ),
-                              Icon(
-                                Icons.navigate_next_rounded,
-                                color: mainColor,
-                                size: 20,
+                              // Mô tả
+                              Text(
+                                _item!.description,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontFamily: "LD",
+                                  color: white,
+                                ),
+                                textAlign: TextAlign.justify,
                               ),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                        const SizedBox(height: 10),
+                        Container(height: 2, color: backgroudColor),
+                        const SizedBox(height: 5),
 
-                    // Rating đầu tiên
-                    _ratings.isNotEmpty
-                        ? ItemRating(
-                            name: _ratings[0].userName,
-                            score: _ratings[0].score.toDouble(),
-                            time: DateFormat(
-                              'dd/MM/yyyy',
-                            ).format(_ratings[0].createdAt),
-                            comment: _ratings[0].comment,
-                          )
-                        : Container(
-                            margin: const EdgeInsets.all(10),
-                            child: Text(
-                              "Chưa có đánh giá",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: white,
-                                fontFamily: "LD",
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "${getAverageRating().toStringAsFixed(1)}",
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontFamily: "LD",
+                                    fontWeight: FontWeight.bold,
+                                    color: white,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  "Đánh giá (${_ratings.length})",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: "LD",
+                                    fontWeight: FontWeight.bold,
+                                    color: white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                await Navigator.pushNamed(
+                                  context,
+                                  "ratingPage",
+                                  arguments: {'productId': _item!.id},
+                                ).then((_) => _loadRatings(widget.id));
+                              },
+                              child: Row(
+                                children: const [
+                                  Text(
+                                    "Tất cả đánh giá",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: "LD",
+                                      fontWeight: FontWeight.bold,
+                                      color: mainColor,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.navigate_next_rounded,
+                                    color: mainColor,
+                                    size: 20,
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                  ],
+                          ],
+                        ),
+
+                        // Rating đầu tiên
+                        _ratings.isNotEmpty
+                            ? ItemRating(
+                                name: _ratings[0].userName,
+                                score: _ratings[0].score.toDouble(),
+                                time: DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(_ratings[0].createdAt),
+                                comment: _ratings[0].comment,
+                              )
+                            : Container(
+                                margin: const EdgeInsets.all(10),
+                                child: Text(
+                                  "Chưa có đánh giá",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: white,
+                                    fontFamily: "LD",
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(

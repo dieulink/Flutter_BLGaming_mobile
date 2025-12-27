@@ -1,5 +1,8 @@
+import 'package:blgaming_app/models/request/order_create_request.dart';
 import 'package:blgaming_app/models/response/promotion.dart';
 import 'package:blgaming_app/screens/order_screens/select_voucher_page.dart';
+import 'package:blgaming_app/screens/payment/paypal_webview.dart';
+import 'package:blgaming_app/services/paypal_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:blgaming_app/models/response/cart_item_model.dart';
@@ -7,6 +10,7 @@ import 'package:blgaming_app/screens/order_screens/widgets/app_bar_order.dart';
 import 'package:blgaming_app/screens/order_screens/widgets/item_order.dart';
 import 'package:blgaming_app/ui_value.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:blgaming_app/screens/payment/paypal_view.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -20,6 +24,30 @@ class _OrderPageState extends State<OrderPage> {
   String receivePhone = "";
   late String userId;
   Promotion? selectedVoucher;
+  OrderCreateRequest _buildOrderRequest({
+    required List<CartItemModel> items,
+    required double originTotal,
+    required double bigSaleDiscount,
+    required double voucherDiscount,
+  }) {
+    return OrderCreateRequest(
+      userId: userId,
+      gameList: items.map((e) {
+        return GameOrderItem(
+          gameId: e.gameId,
+          quantityUserBuy: e.quantity,
+          price: e.price,
+          des: e.name,
+        );
+      }).toList(),
+      promotionList:
+          selectedVoucher != null ? [selectedVoucher!.promotionId] : [],
+      originalPrice: originTotal,
+      discountPrice: bigSaleDiscount + voucherDiscount,
+      finalPrice: (originTotal - bigSaleDiscount - voucherDiscount)
+          .clamp(0, double.infinity),
+    );
+  }
 
   @override
   void initState() {
@@ -161,6 +189,37 @@ class _OrderPageState extends State<OrderPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PaypalView(
+                                items: items.map((e) {
+                                  return PaypalItem(
+                                    name: e.name,
+                                    quantity: e.quantity,
+                                    price: e.price * (1 - e.salePercent / 100),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image.asset(
+                          "assets/imgs/paypal.png",
+                          height: 35,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Thanh toán bằng PayPal",
+                        style: TextStyle(color: white),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -284,7 +343,25 @@ class _OrderPageState extends State<OrderPage> {
               height: 50,
               margin: const EdgeInsets.only(right: 20),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final orderRequest = _buildOrderRequest(
+                    items: items,
+                    originTotal: originTotal,
+                    bigSaleDiscount: bigSaleDiscount,
+                    voucherDiscount: voucherDiscount,
+                  );
+                  print(orderRequest.toJson());
+                  final redirectLink = await PaypalService.createPayment(
+                      body: orderRequest.toJson());
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PaypalWebViewPage(
+                        approvalUrl: redirectLink,
+                      ),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: mainColor,
                   shape: RoundedRectangleBorder(

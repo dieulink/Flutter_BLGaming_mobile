@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:blgaming_app/models/request/rating_request.dart';
 import 'package:blgaming_app/screens/rating/widgets/app_bar_rating.dart';
 import 'package:blgaming_app/services/rating_service.dart';
 import 'package:blgaming_app/ui_value.dart';
@@ -16,22 +15,96 @@ class WriteRatingPage extends StatefulWidget {
 class _WriteRatingPageState extends State<WriteRatingPage> {
   double score = 0;
   final commentController = TextEditingController();
-  late int productId;
+  int? productId;
+  bool _isSubmitting = false;
+
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final int? productId = args?['productId'];
+
+    if (args != null && args['productId'] != null) {
+      productId = args['productId'];
+    }
+  }
+
+  Future<void> _submitReview() async {
+    if (productId == null) return;
+
+    if (score == 0) {
+      _showSnack("Vui lòng chọn số sao đánh giá");
+      return;
+    }
+
+    if (commentController.text.trim().isEmpty) {
+      _showSnack("Vui lòng nhập nội dung đánh giá");
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null || userId.isEmpty) {
+      _showSnack("Vui lòng đăng nhập");
+      return;
+    }
+
+    try {
+      setState(() => _isSubmitting = true);
+
+      await RatingService.addReview(
+        userId: userId,
+        gameId: productId!,
+        score: score.toInt(),
+        comment: commentController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      _showSnack("Gửi đánh giá thành công");
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      Navigator.pop(context, true);
+    } catch (e) {
+      _showSnack("Gửi đánh giá thất bại");
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message,
+            style: const TextStyle(fontFamily: "LD", color: white)),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(20),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    commentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: white,
       appBar: AppBarRating(name: "Viết đánh giá"),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             children: [
               Container(height: 2, color: borderColor),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Hãy chọn số điểm đánh giá của bạn về sản phẩm và dịch vụ",
                 style: TextStyle(
@@ -41,24 +114,26 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
                   fontSize: 15,
                 ),
               ),
-              SizedBox(height: 40),
-              Container(
-                child: RatingBar.builder(
-                  initialRating: 0,
-                  minRating: 1,
-                  direction: Axis.horizontal,
-                  allowHalfRating: false,
-                  itemCount: 5,
-                  itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                  itemBuilder: (context, _) =>
-                      Icon(Icons.star, color: Colors.amber),
-                  onRatingUpdate: (rating) {
-                    score = rating;
-                  },
+              const SizedBox(height: 40),
+              RatingBar.builder(
+                initialRating: score,
+                minRating: 1,
+                allowHalfRating: false,
+                itemCount: 5,
+                unratedColor: white,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
                 ),
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    score = rating;
+                  });
+                },
               ),
-              SizedBox(height: 40),
-              Container(
+              const SizedBox(height: 40),
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Bình luận của bạn : ",
@@ -70,32 +145,30 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              Container(
+              const SizedBox(height: 10),
+              SizedBox(
                 height: 180,
                 child: TextField(
+                  controller: commentController,
                   maxLines: null,
                   expands: true,
-                  controller: commentController,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w400,
                     color: white,
                     fontFamily: 'LD',
                   ),
-                  keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: 'Nhập nội dung đánh giá ...',
-                    hintStyle: TextStyle(color: white),
+                    hintStyle: const TextStyle(color: white),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: borderColor, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: mainColor, width: 2),
+                      borderSide: const BorderSide(color: mainColor, width: 2),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 16,
                     ),
@@ -109,96 +182,29 @@ class _WriteRatingPageState extends State<WriteRatingPage> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          //   color: Colors.white,
           border: Border(top: BorderSide(color: borderColor)),
         ),
-        child: Container(
+        child: SizedBox(
           height: 50,
-          width: getWidth(context) * 0.8,
           child: ElevatedButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              final userId = prefs.getString('userId');
-              int id = int.parse(userId!);
-              final request = RatingRequest(
-                userId: id,
-                productId: productId!,
-                score: score.toInt(),
-                comment: commentController.text.trim(),
-              );
-              try {
-                final result = await RatingService.addRating(request);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(Icons.error_outline, color: white),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            "Gửi đánh giá thành công",
-                            style: TextStyle(fontFamily: "LD"),
-                          ),
-                        ),
-                      ],
-                    ),
-                    backgroundColor: textColor1,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.all(20),
-                    duration: const Duration(seconds: 1),
-                    elevation: 8,
-                  ),
-                );
-                // Navigator.pop(
-                //   context,
-                //   "yourRatingPage",
-                //   arguments: {'productId': productId},
-                // );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(Icons.error_outline, color: white),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            "Gửi đánh giá thất bại",
-                            style: TextStyle(fontFamily: "LD"),
-                          ),
-                        ),
-                      ],
-                    ),
-                    backgroundColor: textColor1,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.all(20),
-                    duration: const Duration(seconds: 1),
-                    elevation: 8,
-                  ),
-                );
-              }
-            },
+            onPressed: _isSubmitting ? null : _submitReview,
             style: ElevatedButton.styleFrom(
               backgroundColor: mainColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
               ),
             ),
-            child: Text(
-              'Gửi đánh giá',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                fontFamily: "LD",
-                color: white,
-              ),
-            ),
+            child: _isSubmitting
+                ? const CircularProgressIndicator(color: white)
+                : const Text(
+                    'Gửi đánh giá',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "LD",
+                      color: white,
+                    ),
+                  ),
           ),
         ),
       ),

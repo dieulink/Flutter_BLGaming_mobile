@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartService {
   static Future<CartResponse?> fetchCart(String userId) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/cart?userId=$userId');
+    final url = Uri.parse('http://192.168.5.139:8080/api/cart?userId=$userId');
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
@@ -41,7 +41,7 @@ class CartService {
     required String userId,
     required int quantity,
   }) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/cart');
+    final url = Uri.parse('http://192.168.5.139:8080/api/cart');
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
@@ -74,7 +74,7 @@ class CartService {
   }
 
   static Future<int> deleteFromCart(int gameId, String userId) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/cart');
+    final url = Uri.parse('http://192.168.5.139:8080/api/cart');
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 

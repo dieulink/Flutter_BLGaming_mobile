@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RatingService {
   static Future<List<RatingResponse>> fetchRatings(int productId) async {
     final url = Uri.parse(
-      'http://192.168.5.138:8080/api/public/reviewList?pageNo=0&pageSize=1000&gameId=$productId',
+      'http://192.168.5.139:8080/api/public/reviewList?pageNo=0&pageSize=1000&gameId=$productId',
     );
 
     final prefs = await SharedPreferences.getInstance();
@@ -34,97 +34,83 @@ class RatingService {
     }
   }
 
-  static Future<List<RatingResponse>> fetchRatingsUser(int productId) async {
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    String? userId = prefs.getString('userId');
-    int id = int.parse(userId!);
-    final url = Uri.parse(
-      'http://192.168.5.138:8080/api/rating/list/$productId/$id',
-    );
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+  static Future<bool> hasUserBuyGame({
+    required String userId,
+    required int gameId,
+  }) async {
+    final uri = Uri.parse(
+      "http://192.168.5.139:8080/api/public/hasUserBuyGame"
+      "?userId=$userId&gameId=$gameId",
     );
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((json) => RatingResponse.fromJson(json)).toList();
-    } else {
-      throw Exception('lỗi');
+    final res = await http.get(uri);
+
+    if (res.statusCode != 200) {
+      throw Exception("Check purchase failed");
+    }
+
+    final json = jsonDecode(res.body);
+    return json["hasBuyProduct"] == true;
+  }
+
+  static Future<void> addReview({
+    required String userId,
+    required int gameId,
+    required int score,
+    required String comment,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+
+    if (token == null) {
+      throw Exception("User not logged in");
+    }
+
+    final uri = Uri.parse(
+      "http://192.168.5.139:8080/api/addReview",
+    );
+
+    final res = await http.post(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({
+        "userId": userId,
+        "gameId": gameId,
+        "score": score,
+        "comment": comment,
+      }),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception("Add review failed");
     }
   }
 
-  static Future<DeleteRatingResult> deleteRating(int ratingId) async {
+  static Future<void> deleteReview(int reviewId) async {
     final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+    final token = prefs.getString("token");
 
-    final url = Uri.parse(
-      'http://192.168.5.138:8080/api/rating/delete/$ratingId',
+    if (token == null) {
+      throw Exception("User not logged in");
+    }
+
+    final uri = Uri.parse(
+      "http://192.168.5.139:8080/api/deleteReview?reviewId=$reviewId",
     );
-    final response = await http.delete(
-      url,
+
+    final res = await http.delete(
+      uri,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
       },
     );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonBody = jsonDecode(response.body);
-      return DeleteRatingResult.fromJson(jsonBody);
-    } else {
-      throw Exception('Xoá đánh giá thất bại: ${response.statusCode}');
-    }
-  }
-
-  static Future<int> checkIfUserPurchased(int userId, int productId) async {
-    final url = Uri.parse(
-      "http://192.168.5.138:8080/api/rating/check_purchased?userId=$userId&productId=$productId",
-    );
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        return int.parse(response.body);
-      } else {
-        throw Exception("Failed to check purchase status");
-      }
-    } catch (e) {
-      print("Lỗi khi gọi API kiểm tra mua hàng: $e");
-      rethrow;
-    }
-  }
-
-  static Future<DeleteRatingResult> addRating(RatingRequest request) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/rating/add');
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(request.toJson()),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonBody = jsonDecode(response.body);
-      return DeleteRatingResult.fromJson(jsonBody);
-    } else {
-      throw Exception('lỗi');
+    if (res.statusCode != 200) {
+      throw Exception("Delete review failed");
     }
   }
 }

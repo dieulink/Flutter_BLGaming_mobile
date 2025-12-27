@@ -34,8 +34,8 @@ class ItemRating extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadiusGeometry.circular(100),
                       child: Image.asset(
-                        "assets/imgs/linhvat2.png",
-                        height: 50,
+                        "assets/imgs/user.png",
+                        height: 30,
                       ),
                     ),
                   ),

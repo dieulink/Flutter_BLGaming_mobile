@@ -6,7 +6,7 @@ import 'package:blgaming_app/models/response/product_category.dart';
 class CategoryService {
   static Future<List<ProductCategory>> fetchCategories() async {
     try {
-      final url = Uri.parse('http://192.168.5.138:8080/api/public/categories');
+      final url = Uri.parse('http://192.168.5.139:8080/api/public/categories');
       final response = await http.get(url);
 
       print("Status: ${response.statusCode}");
@@ -32,7 +32,7 @@ class CategoryService {
   }) async {
     try {
       final url = Uri.parse(
-        'http://192.168.5.138:8080/api/public/game-by-category?pageNo=$page&pageSize=$size&categoryId=$id',
+        'http://192.168.5.139:8080/api/public/game-by-category?pageNo=$page&pageSize=$size&categoryId=$id',
       );
 
       final response = await http.get(url);

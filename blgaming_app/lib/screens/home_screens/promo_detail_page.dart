@@ -104,7 +104,6 @@ class PromoDetailPage extends StatelessWidget {
           const Divider(color: Colors.white24, thickness: 1),
           const SizedBox(height: 20),
 
-          // Mô tả
           const Text(
             "Chi tiết & điều kiện sử dụng",
             style: TextStyle(
@@ -132,9 +131,6 @@ class PromoDetailPage extends StatelessWidget {
     );
   }
 
-  // -----------------------------------------------------------
-  // 3. Nút sử dụng voucher
-  // -----------------------------------------------------------
   Widget _buildUseButton(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(

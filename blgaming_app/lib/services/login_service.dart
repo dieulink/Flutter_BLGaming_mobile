@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
   static Future<LoginResponse?> login(UserLoginRequest request) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/auth/login');
+    final url = Uri.parse('http://192.168.5.139:8080/api/auth/login');
 
     try {
       final response = await http.post(
@@ -64,7 +64,7 @@ class LoginService {
   }
 
   static Future<RegisterResponse?> register(UserRegisterRequest request) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/auth/register');
+    final url = Uri.parse('http://192.168.5.139:8080/api/auth/register');
     try {
       final resp = await http.post(
         url,
@@ -85,7 +85,7 @@ class LoginService {
 
   static Future<String?> confirmEmail(String email) async {
     final url = Uri.parse(
-      'http://192.168.5.138:8080/api/forgot-password/verifyEmail?email=${email}',
+      'http://192.168.5.139:8080/api/forgot-password/verifyEmail?email=${email}',
     );
 
     try {
@@ -112,7 +112,7 @@ class LoginService {
 
   static Future<String?> resetPassword(UserResetPasswordRequest request) async {
     final url = Uri.parse(
-      'http://192.168.5.138:8080/api/forgot-password/verifyOtp',
+      'http://192.168.5.139:8080/api/forgot-password/verifyOtp',
     );
     try {
       final response = await http.post(
@@ -138,7 +138,7 @@ class LoginService {
   }
 
   static Future<LoginResponse?> loginWithGoogle(GgLoginRequest req) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/auth/google');
+    final url = Uri.parse('http://192.168.5.139:8080/api/auth/google');
 
     try {
       final response = await http.post(

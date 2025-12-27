@@ -17,12 +17,14 @@ class _VoucherPageState extends State<VoucherPage> {
 
   late Future<List<Promotion>> promotionsFuture; // Tất cả voucher
   late Future<List<Promotion>> userPromotionsFuture; // Voucher theo userId
+  late Future<List<Promotion>> upcomingPromotionsFuture;
 
   @override
   void initState() {
     super.initState();
     promotionsFuture = PromotionService.fetchPromotions();
     userPromotionsFuture = PromotionService.fetchPromotionByUserId();
+    upcomingPromotionsFuture = PromotionService.fetchUpcomingPromotions();
   }
 
   @override
@@ -83,14 +85,12 @@ class _VoucherPageState extends State<VoucherPage> {
     switch (selectedIndex) {
       case 0:
         return Expanded(child: _buildPromotionList(promotionsFuture));
-
       case 1:
         return Expanded(child: _buildPromotionList(userPromotionsFuture));
-
       case 2:
+        return Expanded(child: _buildPromotionList(upcomingPromotionsFuture));
       default:
-        //  return const Expanded(child: Center(child: Text("Gợi ý dành cho bạn")));
-        return Expanded(child: _buildPromotionList(promotionsFuture));
+        return const SizedBox();
     }
   }
 
@@ -109,7 +109,11 @@ class _VoucherPageState extends State<VoucherPage> {
         final list = snapshot.data ?? [];
 
         if (list.isEmpty) {
-          return const Center(child: Text("Không có voucher"));
+          return const Center(
+              child: Text(
+            "Không có voucher",
+            style: TextStyle(color: white),
+          ));
         }
 
         return ListView.builder(

@@ -1,12 +1,14 @@
 class RatingResponse {
-  final int id; // review_id
-  final String userName; // full_name
-  final int score; // score
-  final String comment; // comment
-  final DateTime createdAt; // create_date
+  final int id;
+  final String userId;
+  final String userName;
+  final int score;
+  final String comment;
+  final DateTime createdAt;
 
   RatingResponse({
     required this.id,
+    required this.userId,
     required this.userName,
     required this.score,
     required this.comment,
@@ -15,11 +17,14 @@ class RatingResponse {
 
   factory RatingResponse.fromJson(Map<String, dynamic> json) {
     return RatingResponse(
-      id: json['review_id'] ?? 0,
-      userName: json['full_name'] ?? 'Ẩn danh',
-      score: json['score'] ?? 0,
-      comment: json['comment'] ?? '',
-      createdAt: DateTime.parse(json['create_date']),
+      id: json['review_id'] as int,
+      userId: json['user_id']?.toString() ?? '',
+      userName: json['full_name']?.toString() ?? 'Ẩn danh',
+      score: json['score'] as int? ?? 0,
+      comment: json['comment']?.toString() ?? '',
+      createdAt: json['create_date'] != null
+          ? DateTime.parse(json['create_date'])
+          : DateTime.now(),
     );
   }
 }

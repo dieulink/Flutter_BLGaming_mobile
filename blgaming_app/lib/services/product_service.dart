@@ -11,7 +11,7 @@ class ProductService {
   }) async {
     try {
       final url = Uri.parse(
-        'http://192.168.5.138:8080/api/public/game-list-new?pageNo=$page&pageSize=$size',
+        'http://192.168.5.139:8080/api/public/game-list-new?pageNo=$page&pageSize=$size',
       );
 
       final response = await http.get(url);
@@ -37,7 +37,7 @@ class ProductService {
   static Future<List<Product>> bestsale({int page = 0, int size = 10}) async {
     try {
       final url = Uri.parse(
-        'http://192.168.5.138:8080/api/public/game-best-sale?pageNo=$page&pageSize=$size',
+        'http://192.168.5.139:8080/api/public/game-best-sale?pageNo=$page&pageSize=$size',
       );
 
       final response = await http.get(url);
@@ -62,7 +62,7 @@ class ProductService {
 
   static Future<Item?> fetchProductItem(int id) async {
     try {
-      final url = Uri.parse('http://192.168.5.138:8080/api/public/detail/$id');
+      final url = Uri.parse('http://192.168.5.139:8080/api/public/detail/$id');
 
       final response = await http.get(url);
       print("Status: ${response.statusCode}");
@@ -88,7 +88,7 @@ class ProductService {
   }) async {
     try {
       final url = Uri.parse(
-        'http://192.168.5.138:8080/api/public/search-game?pageNo=$page&pageSize=$size&searchInput=$keyword',
+        'http://192.168.5.139:8080/api/public/search-game?pageNo=$page&pageSize=$size&searchInput=$keyword',
       );
 
       final response = await http.get(url);
@@ -113,7 +113,7 @@ class ProductService {
   static Future<List<BigSaleItem>> fetchBigSaleToday() async {
     try {
       final url = Uri.parse(
-        "http://192.168.5.138:8080/api/public/bigsale/today",
+        "http://192.168.5.139:8080/api/public/bigsale/today",
       );
       final res = await http.get(url);
       print(jsonDecode(res.body));

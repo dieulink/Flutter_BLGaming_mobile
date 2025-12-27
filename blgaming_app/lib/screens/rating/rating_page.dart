@@ -36,18 +36,30 @@ class _RatingPageState extends State<RatingPage> {
   Future<void> checkUserPurchased() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      int userId = int.parse(prefs.getString('userId') ?? '0');
+      final userId = prefs.getString('userId');
 
-      final result = await RatingService.checkIfUserPurchased(
-        userId,
-        _productId!,
+      if (userId == null || userId.isEmpty) {
+        setState(() {
+          _hasPurchased = false;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final hasPurchased = await RatingService.hasUserBuyGame(
+        userId: userId,
+        gameId: _productId!,
       );
+
+      if (!mounted) return;
+
       setState(() {
-        _hasPurchased = result == 1;
+        _hasPurchased = hasPurchased;
         _isLoading = false;
       });
     } catch (e) {
-      print("Lỗi kiểm tra mua hàng: $e");
+      debugPrint("Lỗi kiểm tra mua hàng: $e");
+      if (!mounted) return;
       setState(() {
         _hasPurchased = false;
         _isLoading = false;

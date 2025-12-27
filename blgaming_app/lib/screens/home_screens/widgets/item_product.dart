@@ -24,7 +24,7 @@ class ItemProduct extends StatelessWidget {
           builder: (_) =>
               const Center(child: CircularProgressIndicator(color: mainColor)),
         );
-        await Future.delayed(const Duration(milliseconds: 2000));
+        await Future.delayed(const Duration(milliseconds: 700));
         Navigator.pop(context);
         if (context.mounted) {
           Navigator.of(context).push(
@@ -33,13 +33,12 @@ class ItemProduct extends StatelessWidget {
                   ProductDetail(id: product.id),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
+                return FadeTransition(opacity: animation, child: child);
+              },
             ),
           );
         }
       },
-
       child: Container(
         //padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -86,7 +85,6 @@ class ItemProduct extends StatelessWidget {
                             horizontal: 5,
                             vertical: 5,
                           ),
-
                           child: Text(
                             "- ${product.salePercent} %",
                             style: TextStyle(

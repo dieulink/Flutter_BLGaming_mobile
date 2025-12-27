@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PromotionService {
-  static const String baseUrl = "http://192.168.5.138:8080/api/public";
+  static const String baseUrl = "http://192.168.5.139:8080/api/public";
 
   static Uri _buildUrl() {
     return Uri.parse("$baseUrl/promotion");
@@ -13,6 +13,10 @@ class PromotionService {
 
   static Uri _buildUrlByUser(String userId) {
     return Uri.parse("$baseUrl/promotionByUserId?userId=$userId");
+  }
+
+  static Uri _buildUpcomingUrl() {
+    return Uri.parse("$baseUrl/promotion/upcoming");
   }
 
   static List<Promotion> _parsePromotions(http.Response res) {
@@ -47,6 +51,17 @@ class PromotionService {
     final userId = await _getUserId();
 
     final url = _buildUrlByUser(userId);
+    final res = await http.get(url);
+
+    if (res.statusCode != 200) {
+      throw Exception("API error: ${res.statusCode}");
+    }
+
+    return _parsePromotions(res);
+  }
+
+  static Future<List<Promotion>> fetchUpcomingPromotions() async {
+    final url = _buildUpcomingUrl();
     final res = await http.get(url);
 
     if (res.statusCode != 200) {

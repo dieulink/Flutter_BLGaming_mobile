@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderService {
   Future<bool> createOrder(OrderRequest order) async {
-    final url = Uri.parse('http://192.168.5.138:8080/api/order/add_order');
+    final url = Uri.parse('http://192.168.5.139:8080/api/order/add_order');
 
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -40,7 +40,7 @@ class OrderService {
     String? id = prefs.getString("userId");
     int userId = int.parse(id!);
     final url = Uri.parse(
-      'http://192.168.5.138:8080/api/order/list_order/user?userId=$userId',
+      'http://192.168.5.139:8080/api/order/list_order/user?userId=$userId',
     );
     try {
       final response = await http.get(
@@ -68,7 +68,7 @@ class OrderService {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
     final url = Uri.parse(
-      'http://192.168.5.138:8080/api/order/order_detail?orderId=$id',
+      'http://192.168.5.139:8080/api/order/order_detail?orderId=$id',
     );
     try {
       final response = await http.get(
